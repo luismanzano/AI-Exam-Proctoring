@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Online Exam Proctoring Unimet AI</title>
+    <link rel="stylesheet" href="{{ url_for('static',filename='styles/main.css') }}">
+</head>
+<body>
+<h1>VIDEO STREAMING</h1>
+<div class="container">
+    <img class="proctor" src="{{ url_for('video_feed') }}">
+    <div class="features">
+        <h3 class="feature">Identidad Verificada:</h3>
+        <h3 class="feature">Direccion de la Mirada:</h3>
+        <h3 class="feature">Telefono Detectado: {{phoneDetected}}</h3>
+        <h3 class="feature">Segundo Computador Detec.:</h3>
+        <h3 class="feature">Boca del Estudiante:</h3>
+    </div>
+</div>
+</body>
+</html>
