@@ -1,0 +1,9 @@
+body{
+    background-color: aqua;
+    background: aqua;
+}
+
+.example{
+    display: flex;
+    background: aqua;
+}

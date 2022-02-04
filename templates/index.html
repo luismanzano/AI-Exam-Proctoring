@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" src="estilo.css" type="text/css">
+    <style>
+        .exampleFeo {
+            margin: 0;
+            background-color: bisque;
+        }
+
+        .div-contenedor{
+
+            display: inline-block;
+
+            margin-top: 10px;
+            margin-left: 40px;
+            margin-right: 0px;
+            margin-bottom: 20px;
+
+            font-weight: bold;
+            font-size: 1.5em;
+        }
+
+        .boton-alerta{
+            border-width: 2px;
+            border-radius: 120px;
+            border-color: #5B032A;
+            background-color: #FED3F8;
+            color: #890740;
+            width: 45px;
+            height: 45px;
+            font-size: 2em;
+        }
+
+        .boton-bien{
+            border-width: 2px;
+            border-radius: 120px;
+            border-color: #00641F;
+            background-color: #3D9558;
+            color: #FCFFD9;
+            width: 45px;
+            height: 45px;
+            font-size: 1.5em;
+        }        
+
+    </style>
+    <title>Videocall System</title>
+</head>
+
+<body class="exampleFeo">
+
+    <h1 class="example">Videostreaming Monitor System</h1>
+    
+    <button class="boton-alerta">!</button>
+    <button class="boton-bien">✔</button>
+    <div id="divCamaras">
+
+    </div>
+
+    <!-- <img id="objetoImg" src="" /> -->
+
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+
+    <script>
+        var usuariosConectados = []
+        var capa = document.getElementById("divCamaras")
+
+        const socket = io()
+        //var imagen = document.getElementById("objetoImg")
+
+        socket.on('connect', () => {
+            //socket.emit('evento', {data: "data yuca"})
+            console.log("Conectado!")
+            //$events.appendChild(newItem('connect'));
+        })
+
+        socket.on('MensajeGlobal', (msg) => {
+            console.log(msg)
+        })
+
+        function retornar() {
+            socket.emit('message', "Mensajito op")
+        }
+
+        socket.on('imgWeb', (msg) =>{
+            //imagen.src = msg.img
+            if (usuariosConectados.indexOf(msg.id) == -1){
+
+                console.log("Sistema: Nuevo usuario " + msg.id)
+                var div = document.createElement("div")
+                div.setAttribute("id", msg.id + "-div")
+                div.setAttribute("class", "div-contenedor")
+
+                var carnet = document.createElement("p")
+                carnet.innerHTML = msg.carnet
+
+                var nombre = document.createElement("p")
+                nombre.innerHTML = msg.nombre
+
+                var image = document.createElement("img")
+                image.setAttribute("id", msg.id + "-img")
+                image.src = msg.img
+
+                capa.appendChild(div)
+                div.appendChild(carnet)
+                div.appendChild(nombre)
+                div.appendChild(image)
+
+                usuariosConectados.push(msg.id)
+
+            }else{
+
+                //console.log("Sistema: Se recibió imagen de un usuario conocido")
+                var image = document.getElementById(msg.id + "-img")
+                image.src = msg.img
+
+            }
+        })
+
+    </script>
+</body>
+
+</html>

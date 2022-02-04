@@ -115,6 +115,8 @@ def main():
         if key & 0xFF == 32:
             break
 
+#main()
+
 cap.release()
 cv2.destroyAllWindows()
 
