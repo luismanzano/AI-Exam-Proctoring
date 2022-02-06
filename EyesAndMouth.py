@@ -16,7 +16,6 @@ class EyesAndMouth():
     def findAttributes(self, img):
 
         try:
-
             small_img = cv2.resize(img, (0, 0), fx=0.25, fy=0.25)
             img = small_img
             img.flags.writeable = False
@@ -201,13 +200,14 @@ class EyesAndMouth():
                     rightEyeFrame = img[rightEyeMinY: rightEyeMaxY,
                                         rightEyeMinX: rightEyeMaxX]
                     # rightEyeFrame = cv2.resize(rightEyeFrame, None, fx=5, fy=5)
-                    cv2.imshow("BN_LEFT_THRESHOLD_EYE", thresholdEye)
-                    cv2.imshow("BN_RIGHT_THRESHOLD_EYE", thresholdEyeRight)
+                    # cv2.imshow("BN_LEFT_THRESHOLD_EYE", thresholdEye)
+                    # cv2.imshow("BN_RIGHT_THRESHOLD_EYE", thresholdEyeRight)
                     # cv2.imshow('Mask', leftEyeMasked)
 
-                    print("OPEN MOUTH RATIO", openMouthRatio)
-                    print("MOUTH POSITION TOP", mouthPositionTop)
-                    print("MOUTH POSITION BOTTOM", mouthPositionBottom)
+                    # print("OPEN MOUTH RATIO", openMouthRatio)
+                    # print("MOUTH POSITION TOP", mouthPositionTop)
+                    # print("MOUTH POSITION BOTTOM", mouthPositionBottom)
+
         except:
             print("se perdio un frame en eye <-----------")
         return openMouthRatio, gazeRatioAVG

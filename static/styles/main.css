@@ -1,0 +1,13 @@
+body{
+    background-color: #151f3a;
+}
+
+div.container{
+    display: flex;
+}
+
+img.proctor{
+    width:75%;
+    border-radius: .5em;
+    box-shadow: 6px 10px 33px 9px rgba(0,0,0,0.43);
+}
