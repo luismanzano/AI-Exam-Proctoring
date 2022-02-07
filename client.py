@@ -52,52 +52,54 @@ def drawFaceRecognitionRectangles(img, face_locations, face_names):
             cv2.rectangle(img, (left, top), (right, bottom), (0, 0, 255), 2)
 
             # Draw a label with a name below the face
-            cv2.rectangle(img, (left, bottom - 35),
-                          (right, bottom), (0, 0, 255), cv2.FILLED)
+            cv2.rectangle(img, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
             font = cv2.FONT_HERSHEY_DUPLEX
-            cv2.putText(img, name, (left + 6, bottom - 6),
-                        font, 1.0, (255, 255, 255), 1)
+            cv2.putText(img, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
 
 def drawMouthOpen(img, openMouthRatio):
     height, width = img.shape[:2]
 
     if openMouthRatio > 0.3:
-        cv2.putText(img, "Boca Abierta", (20, height-100),
-                    cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
+        cv2.putText(img, "Boca Abierta", (20, height-100), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
     else:
-        cv2.putText(img, "Boca Cerrada", (20, height - 100),
-                    cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
+        cv2.putText(img, "Boca Cerrada", (20, height - 100), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
 
 
 def drawGazeRatio(img, gazeRatio):
     height, width = img.shape[:2]
     if gazeRatio > 1.99:
-        cv2.putText(img, f'Mirando a la Derecha, {gazeRatio}', (
-            20, height - 70), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
-
+        cv2.putText(img, f'Mirando a la Derecha, {gazeRatio}', (20, height - 70), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
+        return 2
     elif 0.2 < gazeRatio < 1.99:
-        cv2.putText(img, f'En pantalla, {gazeRatio}', (20, height - 70),
-                    cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
-
+        cv2.putText(img, f'En pantalla, {gazeRatio}', (20, height - 70), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
+        return 0
     elif gazeRatio < 0.4:
-        cv2.putText(img, f'Mirando a la izquierda, {gazeRatio}', (
-            20, height - 70), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
-
+        cv2.putText(img, f'Mirando a la izquierda, {gazeRatio}', (20, height - 70), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
+        return 1
 
 def drawObjectsAndPeople(img, numberPeople, phoneDetected, laptopDetected):
     height, width = img.shape[:2]
-    cv2.putText(img, f' Numero de Personas: {numberPeople}', (
-        20, height - 20), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
+    cv2.putText(img, f' Numero de Personas: {numberPeople}', (20, height - 20), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
 
     if phoneDetected:
-        cv2.putText(img, f' Telefono Detectado', (20, height - 40),
-                    cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1)
+        cv2.putText(img, f' Telefono Detectado', (20, height - 40), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1)
 
     if laptopDetected:
-        cv2.putText(img, f' Computador Detectado', (20, height - 50),
-                    cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1)
+        cv2.putText(img, f' Computador Detectado', (20, height - 50), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1)
 
+def gazeTime(gazeDirection):
+    global initTime
+    currentTime = time.time()
+    global passedTime
+    passedTime = 0
+    if gazeDirection[0] == gazeDirection[1]:
+        print("PUTAAAA")
+        passedTime = currentTime - initTime
+    else:
+        initTime = time.time()
+        print("NOT PUTAAA")
+    print("PASSED TIME", passedTime)
 
 # CONNECTION EVENTS - SOCKETIO
 
@@ -124,6 +126,12 @@ img = None
 imgOriginal = None
 i = 0.0
 pTime = 0
+numberFaces = 0
+phoneDetected = True
+
+initTime = time.time()
+gazeDirection = [0, 0]
+gazePlace = True
 # DECLARING OUR MODELS
 faceDetector = FaceDetector()
 eyesAndMouth = EyesAndMouth()
@@ -156,29 +164,36 @@ while True:
         # HERE WE DETECT THE FACEMESH AND KNOW IF THE PERSON IN TALKING OR IF ITS LOOKING SOMEWHERE ELSE
         openMouthRatio, gazeRatio = eyesAndMouth.findAttributes(img)
         drawMouthOpen(img, openMouthRatio)
-        drawGazeRatio(img, gazeRatio)
+        if gazePlace:
+            gazeDirection[0] = drawGazeRatio(img, gazeRatio)
+        else:
+            gazeDirection[1] = drawGazeRatio(img, gazeRatio)
 
         # HERE WE DETECT THE OBJECTS IN THE SCENE
-        numberPeople, phoneDetected, laptopDetected = objectDetector.DetectObjects(
-            img)
+        numberPeople, phoneDetected, laptopDetected  = objectDetector.DetectObjects(img)
         drawObjectsAndPeople(img, numberPeople, phoneDetected, laptopDetected)
         # FPS SO WE CAN MEASURE THE PERFORMANCE OF THE APP
         cTime = time.time()
         fps = 1 / (cTime - pTime)
         pTime = cTime
-        cv2.putText(img, f"FPS: {int(fps)}", (20, 70),
-                cv2.FONT_HERSHEY_PLAIN, 3, (255, 255, 0), 3)
+        cv2.putText(img, f"FPS: {int(fps)}", (20, 70), cv2.FONT_HERSHEY_PLAIN, 3, (255, 255, 0), 3)
+        initTime = time.time()
+        gazeTime(gazeDirection)
 
         # SEND IMG TO SERVER
         imgOriginal = convert_image_to_jpeg(imgOriginal)
-        if (i % 3 == 0.0):
-            sio.emit('imagenCliente', {'id': str(
+        #if (i % 3 == 0.0):
+        sio.emit('dataCliente', {'id': str(
                 sio.sid), 'carnet': carnet, 'nombre': nombre, 
-                'img': imgOriginal, 'numberPeople': numberPeople, 
-                'phoneDetected': phoneDetected, 
-                'laptopDetected': laptopDetected})
+                'img': imgOriginal, 'numberPeople': int(numberPeople),
+                'numberFaces': int(numberFaces), 'phoneDetected': int(phoneDetected),
+                'laptopDetected': int(laptopDetected)})
 
-
+        # GazePlace setting
+        gazePlace = not gazePlace
+        #print("----------")
+        #print(numberPeople)
+        #print("-------------------<<<<<<<<<<<<<<<<<<----------------")
         # SHOWING THE PROCESSED IMAGE
         cv2.imshow("Image", img)
         key = cv2.waitKey(1)

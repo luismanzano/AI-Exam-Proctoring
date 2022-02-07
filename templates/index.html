@@ -2,17 +2,35 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" src="estilo.css" type="text/css">
+    <title>Videocall System</title>
+
+    <link rel="stylesheet" href="{{url_for('static',filename='styles/main.css')}}">
+
     <style>
+        body {
+            background-color: #151f3a;
+        }
+
+        div.container {
+            display: flex;
+        }
+
+        img.proctor {
+            width: 75%;
+            border-radius: .5em;
+            box-shadow: 6px 10px 33px 9px rgba(0, 0, 0, 0.43);
+        }
+
         .exampleFeo {
             margin: 0;
             background-color: bisque;
         }
 
-        .div-contenedor{
+        .div-contenedor-usuario {
 
             display: inline-block;
 
@@ -25,7 +43,20 @@
             font-size: 1.5em;
         }
 
-        .boton-alerta{
+        .div-compannero {
+
+            display: inline-block;
+            vertical-align: top;
+            margin-top: 10px;
+            margin-left: 20px;
+            margin-right: 0px;
+            margin-bottom: 20px;
+
+            font-weight: bold;
+            font-size: 1.5em;
+        }
+
+        .boton-alerta {
             border-width: 2px;
             border-radius: 120px;
             border-color: #5B032A;
@@ -36,7 +67,7 @@
             font-size: 2em;
         }
 
-        .boton-bien{
+        .boton-bien {
             border-width: 2px;
             border-radius: 120px;
             border-color: #00641F;
@@ -45,83 +76,162 @@
             width: 45px;
             height: 45px;
             font-size: 1.5em;
-        }        
+        }
 
+        .combobox {
+            min-width: 150px;
+            max-width: 200px;
+        }
     </style>
-    <title>Videocall System</title>
+    <script>
+        function accion() {
+            alert("madafaka! ")
+        }    
+    </script>
+
 </head>
 
 <body class="exampleFeo">
 
     <h1 class="example">Videostreaming Monitor System</h1>
-    
+
     <button class="boton-alerta">!</button>
     <button class="boton-bien">✔</button>
-    <div id="divCamaras">
 
+    <div id="divCamaras">
     </div>
 
-    <!-- <img id="objetoImg" src="" /> -->
+    <p></p>
+    <a>Usuarios Conectados: </a>
+    <select id="select-contenedor-usuarios" class="combobox" name="usuarios" onChange="accion">
 
-    <script src="http://code.jquery.com/jquery-3.3.1.min.js"
-        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
+    </select>
+    <p></p>
+
+    <div class="div-contenedor-usuario">
+        <a id="obj-a-carnet">Carnet: N/A</a>
+        <p></p>
+        <a id="obj-a-nombre">Nombre: N/A</a>
+        <p></p>
+        <img id="obj-img-est" />
+        <a></a>
+        <div class="div-compannero">
+            <a id="obj-a-numpersonas">Numero de Personas: </a>
+            <p></p>
+            <a id="obj-a-numrostros">Numero de Rostros: </a>
+            <p></p>
+            <a id="obj-a-tlfndetect">Tlfn. Detectado: </a>
+            <p></p>
+            <a id="obj-a-compdetect">Computador Detectado: </a>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
-
+    <script src=""></script>
     <script>
+
+        var numeroConectados = 0
+        var usuariosData = new Map()
         var usuariosConectados = []
-        var capa = document.getElementById("divCamaras")
+        var carnet = null
+        var nombre = null
+        var carnetUsuarioActual = null
+
+        var selectListaUsuario = document.getElementById("select-contenedor-usuarios")
+        var imageContenedor = document.getElementById("obj-img-est")
+        var textoCarnet = document.getElementById("obj-a-carnet")
+        var textoNombre = document.getElementById("obj-a-nombre")
+        var textoNumPersonas = document.getElementById("obj-a-numpersonas")
+        var textoNumRostros = document.getElementById("obj-a-numrostros")
+        var textoTlfnDetectado = document.getElementById("obj-a-tlfndetect")
+        var textoCompDetectado = document.getElementById("obj-a-compdetect")
+
+        //var capa = document.getElementById("divCamaras")
 
         const socket = io()
-        //var imagen = document.getElementById("objetoImg")
-
         socket.on('connect', () => {
-            //socket.emit('evento', {data: "data yuca"})
             console.log("Conectado!")
-            //$events.appendChild(newItem('connect'));
         })
 
-        socket.on('MensajeGlobal', (msg) => {
-            console.log(msg)
-        })
+        socket.on('dataWeb', (msg) => {
 
-        function retornar() {
-            socket.emit('message', "Mensajito op")
-        }
-
-        socket.on('imgWeb', (msg) =>{
-            //imagen.src = msg.img
-            if (usuariosConectados.indexOf(msg.id) == -1){
+            if (usuariosConectados.indexOf(msg.id) == -1) {//Si entra un usuario con un id desconocido
 
                 console.log("Sistema: Nuevo usuario " + msg.id)
-                var div = document.createElement("div")
-                div.setAttribute("id", msg.id + "-div")
-                div.setAttribute("class", "div-contenedor")
 
-                var carnet = document.createElement("p")
-                carnet.innerHTML = msg.carnet
-
-                var nombre = document.createElement("p")
-                nombre.innerHTML = msg.nombre
-
-                var image = document.createElement("img")
-                image.setAttribute("id", msg.id + "-img")
-                image.src = msg.img
-
-                capa.appendChild(div)
-                div.appendChild(carnet)
-                div.appendChild(nombre)
-                div.appendChild(image)
+                //Ajustes en objetos y variables luego de recibir un nuevo usuario
+                numeroConectados = numeroConectados + 1
+                nombre = msg.nombre
+                carnet = msg.carnet
 
                 usuariosConectados.push(msg.id)
+                /*                 usuariosData.push({
+                                    'id': numeroConectados,
+                                    'id_cliente': msg.id,
+                                    'carnet': carnet,
+                                    'nombre': nombre
+                                }) */
 
-            }else{
+                usuariosData.set(carnet, {
+                    'id': numeroConectados,
+                    'id_cliente': msg.id,
+                    'nombre': nombre
+                })
 
-                //console.log("Sistema: Se recibió imagen de un usuario conocido")
-                var image = document.getElementById(msg.id + "-img")
-                image.src = msg.img
+                //Se actualiza lista de usuarios en el HTML
+                var opcion = document.createElement("option")
+                opcion.setAttribute("id", carnet)//Se envia carnet como id de la etiqueta
+                opcion.innerHTML = numeroConectados + " - " + nombre
+                opcion.onclick = (nombre) => (
+                    alert("Hey! " + nombre)
+                )
+                selectListaUsuario.appendChild(opcion)
+
+                if (carnetUsuarioActual == null) {
+
+                    //Cambios en la seleccion de usuario
+                    imageContenedor.src = msg.img
+                    carnet = msg.carnet
+                    nombre = msg.nombre
+                    textoCarnet.innerText = "Carnet: " + carnet
+                    textoNombre.innerText = "Nombre: " + nombre
+
+                    textoNumPersonas.innerText = "Numero de Personas: " + msg.numberPeople
+                    textoNumRostros.innerText = "Numero de Rostros: " + msg.numberFaces
+                    textoTlfnDetectado.innerText = "Tlfn. Detectado: " + msg.phoneDetected
+                    textoCompDetectado.innerText = "Computador Detectado: " + msg.laptopDetected
+
+                    carnetUsuarioActual = carnet
+
+                }
+
+                //console.log(usuariosData)
+
+            } else {//Si se recibe informacion de un id conocido
+
+                carnetUsuarioActual = selectListaUsuario.options[selectListaUsuario.selectedIndex].id
+
+                if (msg.carnet == carnetUsuarioActual) {//Actualizar solo si es el usuario seleccionado
+
+                    imageContenedor.src = msg.img
+                    textoCarnet.innerText = "Carnet: " + msg.carnet
+                    textoNombre.innerText = "Nombre: " + msg.nombre                    
+                    textoNumPersonas.innerText = "Numero de Personas: " + msg.numberPeople
+                    textoNumRostros.innerText = "Numero de Rostros: " + msg.numberFaces
+                    textoTlfnDetectado.innerText = "Tlfn. Detectado: " + msg.phoneDetected
+                    textoCompDetectado.innerText = "Computador Detectado: " + msg.laptopDetected
+
+                }
+                //console.log(msg)
+
+                //console.log(selectListaUsuario.options[selectListaUsuario.selectedIndex].id)
 
             }
-        })
 
+            //console.log("Recibiendo el msg: ")
+            //console.log(msg)
+
+        })    
     </script>
 </body>

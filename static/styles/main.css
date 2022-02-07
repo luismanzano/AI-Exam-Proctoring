@@ -11,3 +11,44 @@ img.proctor{
     border-radius: .5em;
     box-shadow: 6px 10px 33px 9px rgba(0,0,0,0.43);
 }
+
+.exampleFeo {
+    margin: 0;
+    background-color: bisque;
+}
+
+.div-contenedor{
+
+    display: inline-block;
+
+    margin-top: 10px;
+    margin-left: 40px;
+    margin-right: 0px;
+    margin-bottom: 20px;
+
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+.boton-alerta{
+    border-width: 2px;
+    border-radius: 120px;
+    border-color: #5B032A;
+    background-color: #FED3F8;
+    color: #890740;
+    width: 45px;
+    height: 45px;
+    font-size: 2em;
+}
+
+.boton-bien{
+    border-width: 2px;
+    border-radius: 120px;
+    border-color: #00641F;
+    background-color: #3D9558;
+    color: #FCFFD9;
+    width: 45px;
+    height: 45px;
+    font-size: 1.5em;
+}
+

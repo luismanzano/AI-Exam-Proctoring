@@ -24,10 +24,10 @@ def clienteMsg(msg):
     emit('MensajeGlobal', msg, broadcast = True)
     #send(msg, broadcast = True) #enviar a todos los clientes
 
-@socketio.on('imagenCliente')
+@socketio.on('dataCliente')
 def sendImgWeb(msg):
     #print("-Sistema: Recibida img!")
-    emit('imgWeb', msg, broadcast = True)
+    emit('dataWeb', msg, broadcast = True)
     #send(msg, broadcast = True) #enviar a todos los clientes
 
 if __name__ == "__main__":
