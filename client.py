@@ -88,18 +88,72 @@ def drawObjectsAndPeople(img, numberPeople, phoneDetected, laptopDetected):
     if laptopDetected:
         cv2.putText(img, f' Computador Detectado', (20, height - 50), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1)
 
+
 def gazeTime(gazeDirection):
     global initTime
     currentTime = time.time()
     global passedTime
     passedTime = 0
     if gazeDirection[0] == gazeDirection[1]:
-        print("PUTAAAA")
         passedTime = currentTime - initTime
     else:
         initTime = time.time()
-        print("NOT PUTAAA")
     print("PASSED TIME", passedTime)
+
+
+# ALERTS FOR THE TEACHER
+
+# ---PHONE DETECTED ALERT
+global phoneAlert
+phoneAlert = [False]
+def phoneAlertMethod(phoneDetected):
+    if len(phoneAlert) == 10:
+        phoneAlert.pop(0)
+    phoneAlert.append(phoneDetected)
+    counter = 0
+    for alert in phoneAlert:
+        if alert:
+            counter += 1
+    if counter != 10:
+        return False
+    return True
+
+# ---LAPTOP DETECTED ALERT
+global laptopAlert
+laptopAlert = [False]
+def laptopAlertMethod(laptopDetected):
+    if len(laptopAlert) == 10:
+        laptopAlert.pop(0)
+    laptopAlert.append(laptopDetected)
+    counter = 0
+    for alert in laptopAlert:
+        if alert:
+            counter += 1
+    if counter != 10:
+        return False
+    return True
+
+
+# ---NUMBER OF PEOPLE DETECTED ALERT
+global numberPeopleAlert
+numberPeopleAlert = [0]
+def numberPeopleAlertMethod(numberPeople):
+    if len(numberPeopleAlert) == 10:
+        numberPeopleAlert.pop(0)
+    numberPeopleAlert.append(numberPeople)
+    print("NUMBER PEOPLE ALERT", numberPeopleAlert)
+    counter = 0
+    for alert in numberPeopleAlert:
+        if alert == numberPeople:
+            counter += 1
+    if counter != 10 or numberPeople == 1:
+        return False
+    return True
+
+
+
+
+# END ALERTS FOR THE TEACHER
 
 # CONNECTION EVENTS - SOCKETIO
 
@@ -120,7 +174,6 @@ def disconnect():
 
 #-------INITIAL SETTINGS --------
 # VIDEO-CAPTURE
-#cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 cap = cv2.VideoCapture(0)# Abrir la camara para recibir video
 # VARIABLES
 img = None
@@ -138,14 +191,13 @@ faceDetector = FaceDetector()
 eyesAndMouth = EyesAndMouth()
 objectDetector = ObjectDetector()
 faceRecognizer = FaceRecognizer()
-while True:
 
+
+while True:
     face_locations = []
     face_names = []
     success, img = cap.read()
-    print("img", img)
     if img is not None: #IF EXISTS FRAME
-        print("img", img)
         imgOriginal = img
         img = cv2.flip(img, 1)
         height, width = img.shape[:2]
@@ -169,8 +221,17 @@ while True:
             gazeDirection[1] = drawGazeRatio(img, gazeRatio)
 
         # HERE WE DETECT THE OBJECTS IN THE SCENE
-        numberPeople, phoneDetected, laptopDetected  = objectDetector.DetectObjects(img)
+        numberPeople, phoneDetected, laptopDetected = objectDetector.DetectObjects(img)
+
+        # ALERTAS QUE VAS A ENVIAR AL CUADRO TIEMPO REAL(TELEFONO)
+        sendPhoneAlert = phoneAlertMethod(phoneDetected)
+        sendLaptopAlert = laptopAlertMethod(laptopDetected)
+        sendNumberPeopleAlert = numberPeopleAlertMethod(numberPeople)
         drawObjectsAndPeople(img, numberPeople, phoneDetected, laptopDetected)
+
+        # FIN ALERTAS QUE VAS A ENVIAR AL CUADRO DE TIEMPO REAL
+
+
         # FPS SO WE CAN MEASURE THE PERFORMANCE OF THE APP
         cTime = time.time()
         fps = 1 / (cTime - pTime)
@@ -190,11 +251,8 @@ while True:
                 'laptopDetected': int(laptopDetected)})
         print("2-------sio.emit")
 
-        # GazePlace setting
+        # GAZE PLACE SETTING
         gazePlace = not gazePlace
-        #print("----------")
-        #print(numberPeople)
-        #print("-------------------<<<<<<<<<<<<<<<<<<----------------")
         # SHOWING THE PROCESSED IMAGE
         # cv2.imshow("Image", img)
         # key = cv2.waitKey(1)
