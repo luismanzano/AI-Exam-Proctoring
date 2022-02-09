@@ -19,7 +19,7 @@ carnet = input()
 print("Sistema: Introduce Nombre y Apellido del estudiante:")
 nombre = input()
 sio = socketio.Client()
-sio.connect('http://localhost:5000')
+sio.connect('http://127.0.0.1:5000')
 print('Mi identificador es: ', sio.sid)
 
 # NECESSARY AND AUXILIARY METHODS:
@@ -120,7 +120,8 @@ def disconnect():
 
 #-------INITIAL SETTINGS --------
 # VIDEO-CAPTURE
-cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)  # Abrir la camara para recibir video
+#cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+cap = cv2.VideoCapture(0)# Abrir la camara para recibir video
 # VARIABLES
 img = None
 imgOriginal = None
@@ -137,16 +138,14 @@ faceDetector = FaceDetector()
 eyesAndMouth = EyesAndMouth()
 objectDetector = ObjectDetector()
 faceRecognizer = FaceRecognizer()
-
 while True:
 
     face_locations = []
     face_names = []
-
     success, img = cap.read()
-
+    print("img", img)
     if img is not None: #IF EXISTS FRAME
-
+        print("img", img)
         imgOriginal = img
         img = cv2.flip(img, 1)
         height, width = img.shape[:2]
@@ -183,11 +182,13 @@ while True:
         # SEND IMG TO SERVER
         imgOriginal = convert_image_to_jpeg(imgOriginal)
         #if (i % 3 == 0.0):
+        print("1-------sio.emit")
         sio.emit('dataCliente', {'id': str(
                 sio.sid), 'carnet': carnet, 'nombre': nombre, 
                 'img': imgOriginal, 'numberPeople': int(numberPeople),
                 'numberFaces': int(numberFaces), 'phoneDetected': int(phoneDetected),
                 'laptopDetected': int(laptopDetected)})
+        print("2-------sio.emit")
 
         # GazePlace setting
         gazePlace = not gazePlace
@@ -195,9 +196,9 @@ while True:
         #print(numberPeople)
         #print("-------------------<<<<<<<<<<<<<<<<<<----------------")
         # SHOWING THE PROCESSED IMAGE
-        cv2.imshow("Image", img)
-        key = cv2.waitKey(1)
-        if key & 0xFF == 32:
-            break
+        # cv2.imshow("Image", img)
+        # key = cv2.waitKey(1)
+        # if key & 0xFF == 32:
+        #     break
     
     i = i + 1
