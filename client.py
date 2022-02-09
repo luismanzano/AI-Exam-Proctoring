@@ -88,7 +88,9 @@ def drawObjectsAndPeople(img, numberPeople, phoneDetected, laptopDetected):
     if laptopDetected:
         cv2.putText(img, f' Computador Detectado', (20, height - 50), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1)
 
-
+global initTime
+initTime = time.time()
+gazeDirection = [0, 0]
 def gazeTime(gazeDirection):
     global initTime
     currentTime = time.time()
@@ -98,7 +100,7 @@ def gazeTime(gazeDirection):
         passedTime = currentTime - initTime
     else:
         initTime = time.time()
-    print("PASSED TIME", passedTime)
+    return passedTime
 
 
 # ALERTS FOR THE TEACHER
@@ -141,7 +143,6 @@ def numberPeopleAlertMethod(numberPeople):
     if len(numberPeopleAlert) == 10:
         numberPeopleAlert.pop(0)
     numberPeopleAlert.append(numberPeople)
-    print("NUMBER PEOPLE ALERT", numberPeopleAlert)
     counter = 0
     for alert in numberPeopleAlert:
         if alert == numberPeople:
@@ -150,10 +151,58 @@ def numberPeopleAlertMethod(numberPeople):
         return False
     return True
 
+# ---MOUTH MOVEMENT DETECTED ALERT
+global mouthOpenAlert
+mouthOpenAlert = [0]
+
+def mouthMovementAlertMethod(mouthOpen):
+    if len(mouthOpenAlert) == 10:
+        mouthOpenAlert.pop(0)
+    mouthOpenAlert.append(mouthOpen)
+    counter = 0
+    for alert in mouthOpenAlert:
+        if alert >= 0.3:
+            counter += 1
+    if counter < 5:
+        return False
+    return True
+
+# ---HELPERS TO THE STUDENT DETECTED
+global helpersAlert
+helpersAlert = [0]
+def helpersAlertMethod(numberFaces):
+    helpers = 0 if numberFaces == 1 else numberFaces - 1
+
+    if len(helpersAlert) == 10:
+        helpersAlert.pop(0)
+    helpersAlert.append(numberPeople)
+    print("HELPERS TO THE STUDENT", helpersAlert)
+    counter = 0
+    for alert in helpersAlert:
+        if alert-1 == helpers:
+            counter += 1
+    if counter != 10:
+        return False
+    return True
+
+# -- GAZE OUTSIDE THE SCREEN
+def gazeAlert(gazeTime, gazeRatio):
+    message = ""
+    if gazeRatio > 1.99:
+        message = "Derecha"
+
+    if gazeRatio < 0.4:
+        message = "Izquierda"
+
+    if gazeTime >= 1:
+        # ACA ESTAMOS RETORNANDO UN ARREGLO QUE MANDA LA DIRECCION DE LA MIRADA Y EL TIEMPO QUE LA PERSONA LLEVA MIRANDO EN LA DIRECCION
+        return [message, gazeTime]
 
 
 
-# END ALERTS FOR THE TEACHER
+
+
+# END OF ALERTS FOR THE TEACHER
 
 # CONNECTION EVENTS - SOCKETIO
 
@@ -227,6 +276,9 @@ while True:
         sendPhoneAlert = phoneAlertMethod(phoneDetected)
         sendLaptopAlert = laptopAlertMethod(laptopDetected)
         sendNumberPeopleAlert = numberPeopleAlertMethod(numberPeople)
+        sendMouthMovement = mouthMovementAlertMethod(openMouthRatio)
+        sendHelpersAlert = helpersAlertMethod(numberFaces)
+        sendGazeAlert = gazeAlert(gazeTime(gazeDirection), gazeRatio)
         drawObjectsAndPeople(img, numberPeople, phoneDetected, laptopDetected)
 
         # FIN ALERTAS QUE VAS A ENVIAR AL CUADRO DE TIEMPO REAL
@@ -237,19 +289,18 @@ while True:
         fps = 1 / (cTime - pTime)
         pTime = cTime
         cv2.putText(img, f"FPS: {int(fps)}", (20, 70), cv2.FONT_HERSHEY_PLAIN, 3, (255, 255, 0), 3)
-        initTime = time.time()
         gazeTime(gazeDirection)
 
         # SEND IMG TO SERVER
         imgOriginal = convert_image_to_jpeg(imgOriginal)
         #if (i % 3 == 0.0):
-        print("1-------sio.emit")
+        #print("1-------sio.emit")
         sio.emit('dataCliente', {'id': str(
                 sio.sid), 'carnet': carnet, 'nombre': nombre, 
                 'img': imgOriginal, 'numberPeople': int(numberPeople),
                 'numberFaces': int(numberFaces), 'phoneDetected': int(phoneDetected),
                 'laptopDetected': int(laptopDetected)})
-        print("2-------sio.emit")
+        #print("2-------sio.emit")
 
         # GAZE PLACE SETTING
         gazePlace = not gazePlace
