@@ -105,6 +105,29 @@ def gazeTime(gazeDirection):
 
 # ALERTS FOR THE TEACHER
 
+
+# ---IDENTITY THEFT ALERT
+global identityTheft
+identityTheft = [False]
+def identityTheftMethod(faceNames):
+    if len(faceNames) > 1:
+        return False
+
+    if len(identityTheft) == 10:
+        identityTheft.pop(0)
+    if "CARA DESCONOCIDA" in faceNames:
+        identityTheft.append(True)
+    else:
+        identityTheft.append(False)
+    print("USURPACION DE INDENTIDAD", identityTheft)
+    counter = 0
+    for alert in identityTheft:
+        if alert:
+            counter += 1
+    if counter != 10:
+        return False
+    return True
+
 # ---PHONE DETECTED ALERT
 global phoneAlert
 phoneAlert = [False]
@@ -119,6 +142,8 @@ def phoneAlertMethod(phoneDetected):
     if counter != 10:
         return False
     return True
+
+
 
 # ---LAPTOP DETECTED ALERT
 global laptopAlert
@@ -202,6 +227,8 @@ def gazeAlert(gazeTime, gazeRatio):
 
 
 
+
+
 # END OF ALERTS FOR THE TEACHER
 
 # CONNECTION EVENTS - SOCKETIO
@@ -279,6 +306,7 @@ while True:
         sendMouthMovement = mouthMovementAlertMethod(openMouthRatio)
         sendHelpersAlert = helpersAlertMethod(numberFaces)
         sendGazeAlert = gazeAlert(gazeTime(gazeDirection), gazeRatio)
+        sendIdentityTheftAlert = identityTheftMethod(face_names)
         drawObjectsAndPeople(img, numberPeople, phoneDetected, laptopDetected)
 
         # FIN ALERTAS QUE VAS A ENVIAR AL CUADRO DE TIEMPO REAL
