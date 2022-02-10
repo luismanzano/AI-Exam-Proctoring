@@ -104,8 +104,6 @@ def gazeTime(gazeDirection):
 
 
 # ALERTS FOR THE TEACHER
-
-
 # ---IDENTITY THEFT ALERT
 global identityTheft
 identityTheft = [False]
@@ -299,7 +297,7 @@ while True:
         # HERE WE DETECT THE OBJECTS IN THE SCENE
         numberPeople, phoneDetected, laptopDetected = objectDetector.DetectObjects(img)
 
-        # ALERTAS QUE VAS A ENVIAR AL CUADRO TIEMPO REAL(TELEFONO)
+        # ALERTAS QUE VAS A ENVIAR AL CUADRO TIEMPO REAL
         sendPhoneAlert = phoneAlertMethod(phoneDetected)
         sendLaptopAlert = laptopAlertMethod(laptopDetected)
         sendNumberPeopleAlert = numberPeopleAlertMethod(numberPeople)
@@ -307,6 +305,7 @@ while True:
         sendHelpersAlert = helpersAlertMethod(numberFaces)
         sendGazeAlert = gazeAlert(gazeTime(gazeDirection), gazeRatio)
         sendIdentityTheftAlert = identityTheftMethod(face_names)
+
         drawObjectsAndPeople(img, numberPeople, phoneDetected, laptopDetected)
 
         # FIN ALERTAS QUE VAS A ENVIAR AL CUADRO DE TIEMPO REAL
