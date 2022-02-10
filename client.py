@@ -221,13 +221,16 @@ def gazeAlert(gazeTime, gazeRatio):
         # ACA ESTAMOS RETORNANDO UN ARREGLO QUE MANDA LA DIRECCION DE LA MIRADA Y EL TIEMPO QUE LA PERSONA LLEVA MIRANDO EN LA DIRECCION
         return [message, gazeTime]
 
-
-
-
-
-
-
 # END OF ALERTS FOR THE TEACHER
+
+
+# SENDING ALERTS TO THE SYSTEM
+global alertsArray
+alertsArray = []
+def sendAlertToSystem(phoneAlert, laptopAlert, numberPeopleAlert,
+                      mouthMovementAlert, helpersAlert, gazeAlert):
+    messages = []
+
 
 # CONNECTION EVENTS - SOCKETIO
 
