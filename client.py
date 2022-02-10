@@ -221,6 +221,8 @@ def gazeAlert(gazeTime, gazeRatio):
         # ACA ESTAMOS RETORNANDO UN ARREGLO QUE MANDA LA DIRECCION DE LA MIRADA Y EL TIEMPO QUE LA PERSONA LLEVA MIRANDO EN LA DIRECCION
         return [message, gazeTime]
 
+    return False
+
 # END OF ALERTS FOR THE TEACHER
 
 
@@ -228,8 +230,31 @@ def gazeAlert(gazeTime, gazeRatio):
 global alertsArray
 alertsArray = []
 def sendAlertToSystem(phoneAlert, laptopAlert, numberPeopleAlert,
-                      mouthMovementAlert, helpersAlert, gazeAlert):
+                      mouthMovementAlert, helpersAlert, gazeAlert, identityTheftAlert, img):
+    timeStamp= time.time()
     messages = []
+    if phoneAlert:
+        messages.append("Telefono")
+    if laptopAlert:
+        messages.append("Telefono")
+    if numberPeopleAlert:
+        messages.append("Habitacion Concurrida")
+    if mouthMovementAlert:
+        messages.append("Labios en Movimiento")
+    if helpersAlert:
+        messages.append("El estudiante tiene potenciales ayudantes")
+    if gazeAlert != False:
+        messages.append(f"Mirando a la {gazeAlert[0]}, por {gazeAlert[1]}")
+    if identityTheftAlert:
+        messages.append("Potencial robo de identidad en proceso (NO SE HA RECONOCIDO LA CARA DEL ESTUDIANTE)")
+
+
+    cv2.imwrite(f"Alerts/{timeStamp}.jpg", img)
+    path = f"Alerts/{timeStamp}.jpg"
+
+    alert = [messages, path]
+
+    alertsArray.append(alert)
 
 
 # CONNECTION EVENTS - SOCKETIO
@@ -304,10 +329,13 @@ while True:
         sendPhoneAlert = phoneAlertMethod(phoneDetected)
         sendLaptopAlert = laptopAlertMethod(laptopDetected)
         sendNumberPeopleAlert = numberPeopleAlertMethod(numberPeople)
-        sendMouthMovement = mouthMovementAlertMethod(openMouthRatio)
+        sendMouthMovementAlert = mouthMovementAlertMethod(openMouthRatio)
         sendHelpersAlert = helpersAlertMethod(numberFaces)
         sendGazeAlert = gazeAlert(gazeTime(gazeDirection), gazeRatio)
         sendIdentityTheftAlert = identityTheftMethod(face_names)
+
+        sendAlertToSystem(sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMouthMovementAlert,
+                          sendHelpersAlert, sendGazeAlert, sendIdentityTheftAlert, img)
 
         drawObjectsAndPeople(img, numberPeople, phoneDetected, laptopDetected)
 
