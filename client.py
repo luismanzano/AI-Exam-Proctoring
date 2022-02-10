@@ -5,6 +5,8 @@ import base64
 import mediapipe as mp
 import time
 import threading
+import atexit
+import os, shutil
 
 # IMPORT OUR MODELS FOR CV
 from FaceDetector import FaceDetector
@@ -255,7 +257,20 @@ def sendAlertToSystem(phoneAlert, laptopAlert, numberPeopleAlert,
     alert = [messages, path]
 
     alertsArray.append(alert)
+# -- END SENDING ALERTS TO THE SYSTEM
 
+#REMOVE PICTURES FROM THE FOLDER AT EXIT
+def deleteImagesInAlerts():
+    folder = '/Alerts'
+    for filename in os.listdir(folder):
+        file_path = os.path.join(folder, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print('Failed to delete %s. Reason: %s' % (file_path, e))
 
 # CONNECTION EVENTS - SOCKETIO
 
@@ -369,3 +384,5 @@ while True:
         #     break
     
     i = i + 1
+# DELETE ALL THE IMAGES WHEN THE INTERPRETER CLOSES
+atexit.register(deleteImagesInAlerts)
