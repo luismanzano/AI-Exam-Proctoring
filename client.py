@@ -24,6 +24,7 @@ print('Mi identificador es: ', sio.sid)
 
 # NECESSARY AND AUXILIARY METHODS:
 
+
 def convert_image_to_jpeg(image):
     # Encode frame as jpeg
     frame = cv2.imencode('.jpg', image)[1].tobytes()
@@ -31,6 +32,7 @@ def convert_image_to_jpeg(image):
     # utf-8 encoding
     frame = base64.b64encode(frame).decode('utf-8')
     return "data:image/jpeg;base64,{}".format(frame)
+
 
 def drawFaces(img, faceNumbers):
     height, width = img.shape[:2]
@@ -52,45 +54,59 @@ def drawFaceRecognitionRectangles(img, face_locations, face_names):
             cv2.rectangle(img, (left, top), (right, bottom), (0, 0, 255), 2)
 
             # Draw a label with a name below the face
-            cv2.rectangle(img, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
+            cv2.rectangle(img, (left, bottom - 35),
+                          (right, bottom), (0, 0, 255), cv2.FILLED)
             font = cv2.FONT_HERSHEY_DUPLEX
-            cv2.putText(img, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+            cv2.putText(img, name, (left + 6, bottom - 6),
+                        font, 1.0, (255, 255, 255), 1)
 
 
 def drawMouthOpen(img, openMouthRatio):
     height, width = img.shape[:2]
 
     if openMouthRatio > 0.3:
-        cv2.putText(img, "Boca Abierta", (20, height-100), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
+        cv2.putText(img, "Boca Abierta", (20, height-100),
+                    cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
     else:
-        cv2.putText(img, "Boca Cerrada", (20, height - 100), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
+        cv2.putText(img, "Boca Cerrada", (20, height - 100),
+                    cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
 
 
 def drawGazeRatio(img, gazeRatio):
     height, width = img.shape[:2]
     if gazeRatio > 1.99:
-        cv2.putText(img, f'Mirando a la Derecha, {gazeRatio}', (20, height - 70), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
+        cv2.putText(img, f'Mirando a la Derecha, {gazeRatio}', (
+            20, height - 70), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
         return 2
     elif 0.2 < gazeRatio < 1.99:
-        cv2.putText(img, f'En pantalla, {gazeRatio}', (20, height - 70), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
+        cv2.putText(img, f'En pantalla, {gazeRatio}', (20, height - 70),
+                    cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
         return 0
     elif gazeRatio < 0.4:
-        cv2.putText(img, f'Mirando a la izquierda, {gazeRatio}', (20, height - 70), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
+        cv2.putText(img, f'Mirando a la izquierda, {gazeRatio}', (
+            20, height - 70), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
         return 1
+
 
 def drawObjectsAndPeople(img, numberPeople, phoneDetected, laptopDetected):
     height, width = img.shape[:2]
-    cv2.putText(img, f' Numero de Personas: {numberPeople}', (20, height - 20), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
+    cv2.putText(img, f' Numero de Personas: {numberPeople}', (
+        20, height - 20), cv2.FONT_HERSHEY_PLAIN, 1, (255, 255, 255), 1)
 
     if phoneDetected:
-        cv2.putText(img, f' Telefono Detectado', (20, height - 40), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1)
+        cv2.putText(img, f' Telefono Detectado', (20, height - 40),
+                    cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1)
 
     if laptopDetected:
-        cv2.putText(img, f' Computador Detectado', (20, height - 50), cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1)
+        cv2.putText(img, f' Computador Detectado', (20, height - 50),
+                    cv2.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 1)
+
 
 global initTime
 initTime = time.time()
 gazeDirection = [0, 0]
+
+
 def gazeTime(gazeDirection):
     global initTime
     currentTime = time.time()
@@ -107,6 +123,8 @@ def gazeTime(gazeDirection):
 # ---IDENTITY THEFT ALERT
 global identityTheft
 identityTheft = [False]
+
+
 def identityTheftMethod(faceNames):
     if len(faceNames) > 1:
         return False
@@ -126,9 +144,12 @@ def identityTheftMethod(faceNames):
         return False
     return True
 
+
 # ---PHONE DETECTED ALERT
 global phoneAlert
 phoneAlert = [False]
+
+
 def phoneAlertMethod(phoneDetected):
     if len(phoneAlert) == 10:
         phoneAlert.pop(0)
@@ -142,10 +163,11 @@ def phoneAlertMethod(phoneDetected):
     return True
 
 
-
 # ---LAPTOP DETECTED ALERT
 global laptopAlert
 laptopAlert = [False]
+
+
 def laptopAlertMethod(laptopDetected):
     if len(laptopAlert) == 10:
         laptopAlert.pop(0)
@@ -162,6 +184,8 @@ def laptopAlertMethod(laptopDetected):
 # ---NUMBER OF PEOPLE DETECTED ALERT
 global numberPeopleAlert
 numberPeopleAlert = [0]
+
+
 def numberPeopleAlertMethod(numberPeople):
     if len(numberPeopleAlert) == 10:
         numberPeopleAlert.pop(0)
@@ -174,9 +198,11 @@ def numberPeopleAlertMethod(numberPeople):
         return False
     return True
 
+
 # ---MOUTH MOVEMENT DETECTED ALERT
 global mouthOpenAlert
 mouthOpenAlert = [0]
+
 
 def mouthMovementAlertMethod(mouthOpen):
     if len(mouthOpenAlert) == 10:
@@ -190,9 +216,12 @@ def mouthMovementAlertMethod(mouthOpen):
         return False
     return True
 
+
 # ---HELPERS TO THE STUDENT DETECTED
 global helpersAlert
 helpersAlert = [0]
+
+
 def helpersAlertMethod(numberFaces):
     helpers = 0 if numberFaces == 1 else numberFaces - 1
 
@@ -209,6 +238,8 @@ def helpersAlertMethod(numberFaces):
     return True
 
 # -- GAZE OUTSIDE THE SCREEN
+
+
 def gazeAlert(gazeTime, gazeRatio):
     message = ""
     if gazeRatio > 1.99:
@@ -220,11 +251,6 @@ def gazeAlert(gazeTime, gazeRatio):
     if gazeTime >= 1:
         # ACA ESTAMOS RETORNANDO UN ARREGLO QUE MANDA LA DIRECCION DE LA MIRADA Y EL TIEMPO QUE LA PERSONA LLEVA MIRANDO EN LA DIRECCION
         return [message, gazeTime]
-
-
-
-
-
 
 
 # END OF ALERTS FOR THE TEACHER
@@ -246,9 +272,9 @@ def disconnect():
     print("I'm disconnected!")
 
 
-#-------INITIAL SETTINGS --------
+# -------INITIAL SETTINGS --------
 # VIDEO-CAPTURE
-cap = cv2.VideoCapture(0)# Abrir la camara para recibir video
+cap = cv2.VideoCapture(0)  # Abrir la camara para recibir video
 # VARIABLES
 img = None
 imgOriginal = None
@@ -271,7 +297,7 @@ while True:
     face_locations = []
     face_names = []
     success, img = cap.read()
-    if img is not None: #IF EXISTS FRAME
+    if img is not None:  # IF EXISTS FRAME
         imgOriginal = img
         img = cv2.flip(img, 1)
         height, width = img.shape[:2]
@@ -295,7 +321,8 @@ while True:
             gazeDirection[1] = drawGazeRatio(img, gazeRatio)
 
         # HERE WE DETECT THE OBJECTS IN THE SCENE
-        numberPeople, phoneDetected, laptopDetected = objectDetector.DetectObjects(img)
+        numberPeople, phoneDetected, laptopDetected = objectDetector.DetectObjects(
+            img)
 
         # ALERTAS QUE VAS A ENVIAR AL CUADRO TIEMPO REAL
         sendPhoneAlert = phoneAlertMethod(phoneDetected)
@@ -310,31 +337,46 @@ while True:
 
         # FIN ALERTAS QUE VAS A ENVIAR AL CUADRO DE TIEMPO REAL
 
-
         # FPS SO WE CAN MEASURE THE PERFORMANCE OF THE APP
         cTime = time.time()
         fps = 1 / (cTime - pTime)
         pTime = cTime
-        cv2.putText(img, f"FPS: {int(fps)}", (20, 70), cv2.FONT_HERSHEY_PLAIN, 3, (255, 255, 0), 3)
+        cv2.putText(img, f"FPS: {int(fps)}", (20, 70),
+                    cv2.FONT_HERSHEY_PLAIN, 3, (255, 255, 0), 3)
         gazeTime(gazeDirection)
 
         # SEND IMG TO SERVER
         imgOriginal = convert_image_to_jpeg(imgOriginal)
-        #if (i % 3 == 0.0):
-        #print("1-------sio.emit")
-        sio.emit('dataCliente', {'id': str(
-                sio.sid), 'carnet': carnet, 'nombre': nombre, 
-                'img': imgOriginal, 'numberPeople': int(numberPeople),
-                'numberFaces': int(numberFaces), 'phoneDetected': int(phoneDetected),
-                'laptopDetected': int(laptopDetected)})
-        #print("2-------sio.emit")
+        # if (i % 3 == 0.0):
+        # print("1-------sio.emit")
+        # sio.emit('dataCliente', {'id': str(
+        #        sio.sid), 'carnet': carnet, 'nombre': nombre,
+        #        'img': imgOriginal, 'numberPeople': int(numberPeople),
+        #        'numberFaces': int(numberFaces), 'phoneDetected': int(phoneDetected),
+        #        'laptopDetected': int(laptopDetected)})
+
+        sio.emit('dataCliente', {
+            'id': str(sio.sid),
+            'carnet': carnet,
+            'nombre': nombre,
+            'img': imgOriginal,
+            'numberPeople': int(numberPeople),
+            'numberFaces': int(numberFaces),
+            'identity': int(sendIdentityTheftAlert),
+            'mounthMovement': int(sendMouthMovement),
+            'helpers': int(sendHelpersAlert),
+            'phoneDetected': int(sendPhoneAlert),
+            'laptopDetected': int(sendLaptopAlert)
+        })
+
+        # print("2-------sio.emit")
 
         # GAZE PLACE SETTING
         gazePlace = not gazePlace
         # SHOWING THE PROCESSED IMAGE
-        # cv2.imshow("Image", img)
-        # key = cv2.waitKey(1)
-        # if key & 0xFF == 32:
-        #     break
-    
+        cv2.imshow("Image", img)
+        key = cv2.waitKey(1)
+        if key & 0xFF == 32:
+            break
+
     i = i + 1
