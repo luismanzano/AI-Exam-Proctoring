@@ -11,6 +11,7 @@ app.config['UPLOAD_IMAGE'] = './Faces'  # Ruta para guardar imagenes de Rostros
 app.config['UPLOAD_USER'] = './Users'  # Ruta para guardar data de los usuarios
 global socketio
 socketio = SocketIO(app)
+socketio.server
 global identificadorWeb
 identificadorWeb = 0
 global idsWeb
@@ -75,17 +76,31 @@ def clienteMsg(msg):
 
 @ socketio.on('dataCliente')
 def sendImgWeb(msg):
-    global identificadorWeb
+    #global identificadorWeb
+    room = 'clienteweb'
     #emit('dataWeb', msg, room='room')
     #SocketIO.broadcast.to(identificadorWeb).emit('dataWeb', msg)
-    emit('dataWeb', msg, broadcast=True) #enviar a todos los clientes
+    emit('dataWeb', msg, room=room) #enviar a todos los clientes
+    #emit('dataWeb', msg, broadcast=True) #enviar a todos los clientes
 
-@ socketio.on('idWeb')
-def getIdWeb(msg):
-    global identificadorWeb
-    identificadorWeb = msg
-    #room = session.get('room')
-    #join_room(room)
+#@ socketio.on('join')
+#def join(msg):
+#    #global identificadorWeb
+#    #identificadorWeb = msg
+#    room = 'clienteweb'
+#    join_room(room)
+#    emit('join', msg + " se unio! ", to=room)
+#    #room = session.get('room')
+#    #join_room(room)
+
+@ socketio.on('join')    
+def join(msg):
+    #global identificadorWeb
+    #identificadorWeb = msg
+    room = 'clienteweb'
+    join_room(room)
+    #emit('join', "Se unio el cliente web de id: " + str(msg), room=room)  
+    print("Se unio el cliente web de id: " + str(msg))  
 
 
 if __name__ == "__main__":

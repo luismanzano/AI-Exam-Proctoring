@@ -244,9 +244,11 @@ def gazeAlert(gazeTime, gazeRatio):
     message = ""
     if gazeRatio > 1.99:
         message = "Derecha"
-
-    if gazeRatio < 0.4:
-        message = "Izquierda"
+    else:
+        if gazeRatio < 0.4:
+            message = "Izquierda"
+        else:
+            message = "Centro"
 
     if gazeTime >= 1:
         # ACA ESTAMOS RETORNANDO UN ARREGLO QUE MANDA LA DIRECCION DE LA MIRADA Y EL TIEMPO QUE LA PERSONA LLEVA MIRANDO EN LA DIRECCION
@@ -270,6 +272,14 @@ def connect_error(data):
 @sio.event
 def disconnect():
     print("I'm disconnected!")
+
+#@sio.on('dataWeb')
+#def accion(data):
+#    print("------------------------------ nooooooooooooooooooooooooooooooooo")
+#    print("------------------------------ nooooooooooooooooooooooooooooooooo")
+#    print("------------------------------ nooooooooooooooooooooooooooooooooo")
+#    print("------------------------------ nooooooooooooooooooooooooooooooooo")
+#    print(data)
 
 
 # -------INITIAL SETTINGS --------
@@ -362,11 +372,13 @@ while True:
             'img': imgOriginal,
             'numberPeople': int(numberPeople),
             'numberFaces': int(numberFaces),
+            'alertNumber': int(sendNumberPeopleAlert),
             'identity': int(sendIdentityTheftAlert),
             'mounthMovement': int(sendMouthMovement),
             'helpers': int(sendHelpersAlert),
             'phoneDetected': int(sendPhoneAlert),
-            'laptopDetected': int(sendLaptopAlert)
+            'laptopDetected': int(sendLaptopAlert),
+            'gaze': sendGazeAlert
         })
 
         # print("2-------sio.emit")
