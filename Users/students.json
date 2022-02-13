@@ -1,0 +1,14 @@
+{
+    "students": [
+        {
+            "carnet": "20181110573",
+            "nombre": "Carlos",
+            "apellido": "Morales"
+        },
+        {
+            "carnet": "201811105733",
+            "nombre": "Ingrid",
+            "apellido": "Morales"
+        }
+    ]
+}

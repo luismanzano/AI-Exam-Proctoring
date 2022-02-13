@@ -53,7 +53,7 @@
             margin-bottom: 20px;
 
             font-weight: bold;
-            font-size: 1.5em;
+            font-size: 1em;
         }
 
         .boton-alerta {
@@ -121,10 +121,25 @@
             <p></p>
             <a id="obj-a-numrostros">Numero de Rostros: </a>
             <p></p>
+            <a id="obj-a-identidad">Alerta de identidad: </a>
+            <p></p>
+            <a id="obj-a-boca">Movimiento de labios: </a>
+            <p></p>
+            <a id="obj-a-ayudante">Alerta de ayudante: </a>
+            <p></p>
             <a id="obj-a-tlfndetect">Tlfn. Detectado: </a>
             <p></p>
             <a id="obj-a-compdetect">Computador Detectado: </a>
+            <p></p>
+            <a id="obj-a-dirmirada">Dirección Mirada: </a>
+            <p></p>
+            <a id="obj-a-timemirada">Tiempo observando a esa dirección: </a>
         </div>
+    </div>
+
+
+    <div id='div-contenedor-historico'>
+
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
@@ -138,23 +153,47 @@
         var nombre = null
         var carnetUsuarioActual = null
 
+        //Variables Alertas
+        var identidad = ""
+        var boca = ""
+        var ayudante = ""
+        var telefono = ""
+        var computador = ""
+
+        //Objetos JAVASCRIPT
+        //datos usuario e imagen principal
         var selectListaUsuario = document.getElementById("select-contenedor-usuarios")
         var imageContenedor = document.getElementById("obj-img-est")
         var textoCarnet = document.getElementById("obj-a-carnet")
         var textoNombre = document.getElementById("obj-a-nombre")
+
+        //alertas real-time
         var textoNumPersonas = document.getElementById("obj-a-numpersonas")
         var textoNumRostros = document.getElementById("obj-a-numrostros")
+        var textoAlertaIdentidad = document.getElementById("obj-a-identidad")
+        var textoMovimientoBoca = document.getElementById("obj-a-boca")
+        var textoAlertaAyudante = document.getElementById("obj-a-ayudante")
         var textoTlfnDetectado = document.getElementById("obj-a-tlfndetect")
         var textoCompDetectado = document.getElementById("obj-a-compdetect")
+        var textoDireccionMirada = document.getElementById("obj-a-dirmirada")
+        var textoTimeMirada = document.getElementById("obj-a-timemirada")
 
+        //historico de alertas
+        var divHistoricoAlertas = document.getElementById("div-contenedor-historico")
         //var capa = document.getElementById("divCamaras")
 
         const socket = io()
         socket.on('connect', () => {
             console.log("Conectado!")
+            socket.emit('join', socket.id)
         })
 
+
+        // -----------------------------------------------------------------------------------------------------
+        // ------------------------------ GET IMAGE AND REAL-TIME ALERTS FROM SERVER ---------------------------
         socket.on('dataWeb', (msg) => {
+
+            //console.log(msg)
 
             if (usuariosConectados.indexOf(msg.id) == -1) {//Si entra un usuario con un id desconocido
 
@@ -190,6 +229,7 @@
 
                 if (carnetUsuarioActual == null) {
 
+                    //console.log(msg)
                     //Cambios en la seleccion de usuario
                     imageContenedor.src = msg.img
                     carnet = msg.carnet
@@ -197,11 +237,51 @@
                     textoCarnet.innerText = "Carnet: " + carnet
                     textoNombre.innerText = "Nombre: " + nombre
 
+                    //Comienzan a cambiar las alertas
                     textoNumPersonas.innerText = "Numero de Personas: " + msg.numberPeople
-                    textoNumRostros.innerText = "Numero de Rostros: " + msg.numberFaces
-                    textoTlfnDetectado.innerText = "Tlfn. Detectado: " + msg.phoneDetected
-                    textoCompDetectado.innerText = "Computador Detectado: " + msg.laptopDetected
 
+                    textoNumRostros.innerText = "Numero de Rostros: " + msg.numberFaces
+
+                    if (msg.identity == 1) {
+                        identidad = "Irregularidad"
+                    } else {
+                        identidad = "Sin inconvenientes"
+                    }
+                    textoAlertaIdentidad.innerText = "Detector de identidad: " + identidad
+
+                    if (msg.mounthMovement == 1) {
+                        boca = "En movimiento"
+                    } else {
+                        boca = "Sin movimiento"
+                    }
+                    textoMovimientoBoca.innerText = "Movimiento de labios: " + boca
+
+                    if (msg.helpers == 1) {
+                        ayudante = "Irregularidad"
+                    } else {
+                        ayudante = "Normal"
+                    }
+                    textoAlertaAyudante.innerText = "Alerta de ayudante: " + ayudante
+
+                    if (msg.phoneDetected == 1) {
+                        telefono = "Si"
+                    } else {
+                        telefono = "No"
+                    }
+                    textoTlfnDetectado.innerText = "Tlfn. Detectado: " + telefono
+
+                    if (msg.laptopDetected == 1) {
+                        computador = "Si"
+                    } else {
+                        computador = "No"
+                    }
+                    textoCompDetectado.innerText = "Computador Detectado: " + computador
+
+                    textoDireccionMirada.innerText = "Dirección Mirada: " + msg.gaze[0]
+
+                    textoTimeMirada.innerText = "Tiempo observando a esa dirección: " + msg.gaze[1]
+
+                    //Actualización usuario Actual
                     carnetUsuarioActual = carnet
 
                 }
@@ -214,13 +294,52 @@
 
                 if (msg.carnet == carnetUsuarioActual) {//Actualizar solo si es el usuario seleccionado
 
+                    //console.log(msg)
+
                     imageContenedor.src = msg.img
-                    textoCarnet.innerText = "Carnet: " + msg.carnet
-                    textoNombre.innerText = "Nombre: " + msg.nombre                    
+
                     textoNumPersonas.innerText = "Numero de Personas: " + msg.numberPeople
+
                     textoNumRostros.innerText = "Numero de Rostros: " + msg.numberFaces
-                    textoTlfnDetectado.innerText = "Tlfn. Detectado: " + msg.phoneDetected
-                    textoCompDetectado.innerText = "Computador Detectado: " + msg.laptopDetected
+
+                    if (msg.identity == 1) {
+                        identidad = "Irregularidad"
+                    } else {
+                        identidad = "Sin inconvenientes"
+                    }
+                    textoAlertaIdentidad.innerText = "Detector de identidad: " + identidad
+
+                    if (msg.mounthMovement == 1) {
+                        boca = "En movimiento"
+                    } else {
+                        boca = "Sin movimiento"
+                    }
+                    textoMovimientoBoca.innerText = "Movimiento de labios: " + boca
+
+                    if (msg.helpers == 1) {
+                        ayudante = "Irregularidad"
+                    } else {
+                        ayudante = "Normal"
+                    }
+                    textoAlertaAyudante.innerText = "Alerta de ayudante: " + ayudante
+
+                    if (msg.phoneDetected == 1) {
+                        telefono = "Si"
+                    } else {
+                        telefono = "No"
+                    }
+                    textoTlfnDetectado.innerText = "Tlfn. Detectado: " + telefono
+
+                    if (msg.laptopDetected == 1) {
+                        computador = "Si"
+                    } else {
+                        computador = "No"
+                    }
+                    textoCompDetectado.innerText = "Computador Detectado: " + computador
+
+                    textoDireccionMirada.innerText = "Dirección Mirada: " + msg.gaze[0]
+
+                    textoTimeMirada.innerText = "Tiempo observando a esa dirección: " + msg.gaze[1]
 
                 }
                 //console.log(msg)
@@ -229,9 +348,34 @@
 
             }
 
-            //console.log("Recibiendo el msg: ")
-            //console.log(msg)
+        })
+        //-----------------------------------------------------------------------------------------
+        //----------------------END GET IMAGE AND REAL-TIME ALERTS FROM SERVER---------------------    
 
-        })    
+        //-------------------------- GET HISTORIC ALERTS WITH FRAME -------------------------------
+
+
+        socket.on('historicAlert', (msg) => {
+            var divAlerta = document.createElement('div')
+
+            var imgAlerta = document.createElement('img')
+            imgAlerta.src = msg.img
+
+            var divAlertaTexto = document.createElement('div')
+            divAlertaTexto.setAttribute("class", 'div-compannero')
+
+            var textoAlerta = document.createElement('a')
+            textoAlerta.innerText = msg.alert
+
+            divAlerta.appendChild(imgAlerta)
+            divAlertaTexto.appendChild(textoAlerta)
+            divAlerta.appendChild(divAlertaTexto)
+            divHistoricoAlertas.appendChild(divAlerta)
+
+            console.log("--------------")
+            console.log("HISTORIC ALERT:")
+            console.log(msg)
+        })
+
     </script>
 </body>
