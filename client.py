@@ -297,6 +297,7 @@ def sendAlertToSystem(phoneAlert, laptopAlert, numberPeopleAlert,
 
 
 def checkAlerts(sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMouthMovementAlert, sendHelpersAlert, sendGazeAlert, sendIdentityTheftAlert, img):
+###########FALTA EL GAZEEEEEE
 
     text = ""
     messages = {}
@@ -347,7 +348,7 @@ def checkAlerts(sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMout
     return text, messages, condition
 
 
-def buildTextAlert(messages):
+def buildTextAlert(messages):###########FALTA EL GAZEEEEEE
 
     text = ""
 
@@ -509,13 +510,22 @@ while True:
             'gaze': sendGazeAlert
         })
 
-        if(alertVerification):
+        if(alertVerification and alertText != ""):
             print(
                 "-------------------------------------COSAS EXTRAÑAS----------------------------------------")
+
+            imgPlus = convert_image_to_jpeg(img)
+
             sio.emit('dataAlert', {
                 'carnet': carnet,
                 'alert': alertText,
-                'img': imgOriginal
+                'img': imgPlus,
+                'alertPhone': int(sendPhoneAlert),
+                'alertLaptop': int(sendLaptopAlert),
+                'alertNumberPeople': int(sendNumberPeopleAlert),
+                'alertMounth': int(sendMouthMovementAlert),
+                'alertHelpers': int(sendHelpersAlert),
+                'alertIdentity': int(sendIdentityTheftAlert)
             })
 
         # print("2-------sio.emit")

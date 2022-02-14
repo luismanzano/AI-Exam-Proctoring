@@ -104,8 +104,6 @@
     <p></p>
     <a>Usuarios Conectados: </a>
     <select id="select-contenedor-usuarios" class="combobox" name="usuarios" onChange="seleccionarUsuario()">
-
-
     </select>
     <p></p>
 
@@ -137,6 +135,15 @@
         </div>
     </div>
 
+    <select id="select-filtros" class="combobox" name="filtro" onChange="seleccionarFiltro()">
+        <option>Todos</option>
+        <option>Identidad</option>
+        <option>Ayudantes</option>
+        <option>Mov. Labios</option>
+        <option>Mov. Mirada</option>
+        <option>Telefono</option>
+        <option>Computador</option>
+    </select>
 
     <div id='div-contenedor-historico'>
 
@@ -152,6 +159,15 @@
         var carnet = null
         var nombre = null
         var carnetUsuarioActual = null
+
+        var arregloAlertasTodo = new Map()
+        var arregloAlertasIdentidad = new Map()
+        var arregloAlertasAyudantes = new Map()
+        var arregloAlertasLabios = new Map()
+        var arregloAlertasMirada = new Map()
+        var arregloAlertasTelefono = new Map()
+        var arregloAlertasComputador = new Map()
+        var selectFiltro = document.getElementById("select-filtros")
 
         //Variables Alertas
         var identidad = ""
@@ -193,6 +209,7 @@
         // ------------------------------ GET IMAGE AND REAL-TIME ALERTS FROM SERVER ---------------------------
         socket.on('dataWeb', (msg) => {
 
+            crearArreglosAlertas(msg.carnet.toString() + "-alertas")
 
             if (usuariosConectados.indexOf(msg.id) == -1) {//Si entra un usuario con un id desconocido
 
@@ -269,30 +286,18 @@
         //-------------------------- GET HISTORIC ALERTS WITH FRAME -------------------------------
 
         socket.on('historicAlert', (msg) => {
-            var divAlertaUsuario = null
-            divAlertaUsuario = document.getElementById(msg.carnet.toString() + "-alertas")
 
-            if (divAlertaUsuario == null){
-                divAlertaUsuario = document.createElement('div')
-                divAlertaUsuario.setAttribute("id", msg.carnet.toString() + "-alertas")
-                divHistoricoAlertas.appendChild(divAlertaUsuario)
+            carnetUsuarioActual = selectListaUsuario.options[selectListaUsuario.selectedIndex].id
+
+            if (msg.carnet.toString() == carnetUsuarioActual.toString()) {
+
+                crearAlertasUsuarioSeleccionado(msg)
+
+            } else {
+
+                crearAlertasUsuarioOculto(msg)
+
             }
-
-            var divAlerta = document.createElement('div')
-
-            var imgAlerta = document.createElement('img')
-            imgAlerta.src = msg.img
-
-            var divAlertaTexto = document.createElement('div')
-            divAlertaTexto.setAttribute("class", 'div-compannero')
-
-            var textoAlerta = document.createElement('a')
-            textoAlerta.innerText = msg.alert
-
-            divAlerta.appendChild(imgAlerta)
-            divAlertaTexto.appendChild(textoAlerta)
-            divAlerta.appendChild(divAlertaTexto)
-            divAlertaUsuario.appendChild(divAlerta)
 
         })
         //----------------------------------------------------------------------------------------
@@ -381,19 +386,90 @@
             textoTimeMirada.innerText = "Tiempo observando a esa dirección: ..."
         }
 
+        function crearAlertasUsuarioSeleccionado(alertas) {
+
+            let divAlertaUsuario = null
+            let idUser = alertas.carnet.toString() + "-alertas"
+            divAlertaUsuario = document.getElementById(idUser)
+
+
+            if (divAlertaUsuario == null) {
+                divAlertaUsuario = document.createElement('div')
+                divAlertaUsuario.setAttribute("id", idUser)
+                divHistoricoAlertas.appendChild(divAlertaUsuario)
+            }
+
+            let divAlerta = document.createElement('div')
+            let idEtiqueta = idUser.toString() + (arregloAlertasTodo.get(idUser).length).toString()
+            divAlerta.setAttribute("id", idEtiqueta)
+
+            let imgAlerta = document.createElement('img')
+
+            imgAlerta.src = alertas.img
+
+            let divAlertaTexto = document.createElement('div')
+            divAlertaTexto.setAttribute("class", 'div-compannero')
+
+            let textoAlerta = document.createElement('a')
+            textoAlerta.innerText = alertas.alert
+
+            divAlerta.appendChild(imgAlerta)
+            divAlertaTexto.appendChild(textoAlerta)
+            divAlerta.appendChild(divAlertaTexto)
+            divAlertaUsuario.appendChild(divAlerta)
+
+            asignarFiltros(alertas, idUser, idEtiqueta)
+
+        }
+
+        function crearAlertasUsuarioOculto(alertas) {
+
+            let divAlertaUsuario = null
+            let idUser = alertas.carnet.toString() + "-alertas"
+            divAlertaUsuario = document.getElementById(idUser)
+
+            if (divAlertaUsuario == null) {
+                divAlertaUsuario = document.createElement('div')
+                divAlertaUsuario.setAttribute("id", idUser)
+                divHistoricoAlertas.appendChild(divAlertaUsuario)
+            }
+
+            let divAlerta = document.createElement('div')
+            let idEtiqueta = idUser.toString() + (arregloAlertasTodo.get(idUser).length).toString()
+            divAlerta.setAttribute("id", idEtiqueta)
+
+            let imgAlerta = document.createElement('img')
+            imgAlerta.src = alertas.img
+
+            let divAlertaTexto = document.createElement('div')
+            divAlertaTexto.setAttribute("class", 'div-compannero')
+
+            let textoAlerta = document.createElement('a')
+            textoAlerta.innerText = alertas.alert
+
+            divAlerta.appendChild(imgAlerta)
+            divAlertaTexto.appendChild(textoAlerta)
+            divAlerta.appendChild(divAlertaTexto)
+            divAlertaUsuario.appendChild(divAlerta)
+
+            divAlertaUsuario.style.display = "None"
+            asignarFiltros(alertas, idUser, idEtiqueta)
+
+        }
+
         function ocultarOtrasAlertas(carnet) {
             console.log("ocultar alertas: ")
             for (let usuario of usuariosData) {
 
                 if (usuario[0].toString() != carnet.toString()) {
 
-                    console.log("Entre! " + usuario[0].toString())
+                    //console.log("Entre! " + usuario[0].toString())
                     let id = usuario[0].toString() + "-alertas"
                     divAlertaOcultar = document.getElementById(id)
-                    console.log(id)
+                    //console.log(id)
                     divAlertaOcultar.style.display = "None"
-                
-                }else{
+
+                } else {
 
                     let id = usuario[0].toString() + "-alertas"
                     divAlertaMostrar = document.getElementById(id)
@@ -403,6 +479,62 @@
 
             }
 
+        }
+
+        function crearArreglosAlertas(idUser) {
+
+            //Creacion de arreglos por id del DIV que contiene a todas las alertas de ese tipo
+            if (arregloAlertasTodo.get(idUser) == null) arregloAlertasTodo.set(idUser, [])
+            if (arregloAlertasIdentidad.get(idUser) == null) arregloAlertasIdentidad.set(idUser, [])
+            if (arregloAlertasAyudantes.get(idUser) == null) arregloAlertasAyudantes.set(idUser, [])
+            if (arregloAlertasLabios.get(idUser) == null) arregloAlertasLabios.set(idUser, [])
+            if (arregloAlertasMirada.get(idUser) == null) arregloAlertasMirada.set(idUser, [])
+            if (arregloAlertasTelefono.get(idUser) == null) arregloAlertasTelefono.set(idUser, [])
+            if (arregloAlertasComputador.get(idUser) == null) arregloAlertasComputador.set(idUser, [])
+
+        }
+
+        function asignarFiltros(alertas, idUser, idEtiqueta) {
+
+            arregloAlertasTodo.get(idUser).push(idEtiqueta)
+
+            if (alertas.alertPhone == 1){
+                arregloAlertasTelefono.get(idUser).push(idEtiqueta)
+            }
+
+            if (alertas.alertLaptop == 1) {
+                arregloAlertasComputador.get(idUser).push(idEtiqueta)
+            }
+
+            if (alertas.alertNumberPeople == 1){
+                arregloAlertasAyudantes.get(idUser).push(idEtiqueta)
+            }
+
+            if (alertas.alertMounth == 1){
+                arregloAlertasLabios.get(idUser).push(idEtiqueta)
+            }
+
+            if (alertas.alertHelpers == 1){
+                arregloAlertasAyudantes.get(idUser).push(idEtiqueta)
+            }
+
+            if (alertas.alertIdentity == 1){
+                arregloAlertasIdentidad.get(idUser).push(idEtiqueta)
+            }
+
+        }
+
+        function seleccionarFiltro(){
+            let opcionFiltro = selectFiltro.options[selectFiltro.selectedIndex].innerText
+            let idUser = carnetUsuarioActual.toString() + "-alertas"
+
+            if (opcionFiltro.toString() == "Identidad"){
+                arregloAlertasIdentidad.get(idUser).forEach(idEtiqueta => {
+                    etiqueta = document.getElementById(idEtiqueta)
+                    etiqueta.style.display = "None"
+                });
+            }
+            
         }
 
     </script>
