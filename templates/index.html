@@ -8,81 +8,183 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Videocall System</title>
 
-    <link rel="stylesheet" href="{{url_for('static',filename='styles/main.css')}}">
+<!--    <link rel="stylesheet" href="{{url_for('static',filename='styles/main.css')}}">-->
 
     <style>
-        body {
-            background-color: #151f3a;
-        }
-
-        div.container {
-            display: flex;
-        }
-
-        img.proctor {
-            width: 75%;
-            border-radius: .5em;
-            box-shadow: 6px 10px 33px 9px rgba(0, 0, 0, 0.43);
-        }
-
-        .exampleFeo {
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,300;0,400;0,600;0,700;0,900;1,100;1,300;1,600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;700&family=Noto+Sans:wght@400;700&family=Play&display=swap');        
+        body{
+            background: rgb(0,59,87);
+            font-family: "Noto Sans", sans-serif;
+            background: linear-gradient(0deg, rgba(0,59,87,1) 0%, rgba(0,90,162,1) 100%);
+            color: #fff;
             margin: 0;
-            background-color: bisque;
+            }
+        
+        *{
+            box-sizing: border-box;
+        }
+        
+        .div-contenedor-usuario{
+            padding: 0 1%;
+        }
+        
+        #obj-a-nombre{
+            font-size: 30px;
+            font-weight: bolder;
         }
 
-        .div-contenedor-usuario {
-
-            display: inline-block;
-
-            margin-top: 10px;
-            margin-left: 40px;
-            margin-right: 0px;
-            margin-bottom: 20px;
-
+        #obj-a-carnet{
+            font-size: 25px;
             font-weight: bold;
-            font-size: 1.5em;
         }
 
-        .div-compannero {
-
-            display: inline-block;
-            vertical-align: top;
-            margin-top: 10px;
-            margin-left: 20px;
-            margin-right: 0px;
-            margin-bottom: 20px;
-
+        #obj-img-est{
+            width: 750px;
+            height: 440px;
+            box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+        }
+            
+        .div-compannero{
+            display: flex;
+            flex-direction: column;
+            font-size: 10px;
             font-weight: bold;
-            font-size: 1em;
+            width: 130px;
+            height: 435px;
+            justify-content: space-between;
+            gap: 1px 10px;
+            position:relative;
+            bottom: 444px;
+            left: 4px;
+            padding: 19px 12px 18px 8px;
+            background-color: rgba(60, 60, 60, 0.60);
         }
 
-        .boton-alerta {
-            border-width: 2px;
-            border-radius: 120px;
-            border-color: #5B032A;
-            background-color: #FED3F8;
-            color: #890740;
-            width: 45px;
-            height: 45px;
-            font-size: 2em;
+        .dashboard{
+            display: flex;
+            width: 100%;
+            padding-top: 2%;;
         }
 
-        .boton-bien {
-            border-width: 2px;
-            border-radius: 120px;
-            border-color: #00641F;
-            background-color: #3D9558;
-            color: #FCFFD9;
-            width: 45px;
-            height: 45px;
-            font-size: 1.5em;
+        .alerts{
+            padding: 1% 0;
         }
 
-        .combobox {
-            min-width: 150px;
-            max-width: 200px;
+        #div-contenedor-historico{
+            align-self: center;
+            width: 630px;
+            height: 500px;
+            border: 3px solid rgba(253,187,45,1);
+            border-radius: 3px;
+            overflow-y: scroll;
+            overflow-x: hidden;
         }
+
+        select{
+            font-size: 15px;
+            padding: 5px;
+            background-color: rgba(237, 237, 237, 0 );
+            border-radius: 5px;
+            border: 3px solid rgba(253,187,45,1);
+            font-family: "Noto Sans", sans-serif;
+            color:white;
+        }
+
+        .custom-select2{
+            border: 3px solid #000;
+            border-radius: 5px;
+        }
+
+        .filter{
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .separator{
+            width: 10px;
+            height: 10px;
+        }
+
+        .alerta-imagen{
+            height: 230px;
+            margin-right: 3px;
+        }
+
+        .div-compannero2{
+            padding: 3px 1px;
+        }
+
+        .comboAlert{
+            display: flex;
+            font-size: 10px;
+            justify-content: space-evenly;
+            align-items: initial;
+            padding-bottom: 5px;
+            border-bottom: 3px solid white;
+        }
+
+        .navbar{
+            display: flex;
+            flex-direction: row;
+            background: rgb(253,187,45);
+            background: linear-gradient(90deg, rgba(253,187,45,1) 0%, rgba(250,152,68,1) 50%, rgba(253,187,45,1) 89%);
+            justify-content: space-between;
+            height: 68px;
+            color: #000;
+            align-items: center;
+            padding: 0 2%;
+        }
+
+        .controls{
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+        }
+
+        h2.title{
+            font-family: "Heebo", sans-serif;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        span.branding{
+            font-family: "Play", sans-serif;
+            letter-spacing: 1px;
+        }
+
+        span.width{
+            color: rgba(0,0,0,0)
+        }
+
+        /*
+        STYLING THE SCROLLBARS
+        */
+
+        /* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+
     </style>
+
+
     <script>
         function accion() {
             alert("madafaka! ")
@@ -91,50 +193,61 @@
 
 </head>
 
-<body class="exampleFeo">
+<body class="">
+    <div class="navbar">
+        <h2 class="title">UNIMET <span class="width"></span> <span class="branding">PROCTOR</span></h2>
+    <div class="controls">
+        <div id="divCamaras">
+        </div>
+        <a>Usuarios Conectados: </a>
+        <div class="custom-select2">
+            <select id="select-contenedor-usuarios" class="combobox" name="usuarios" onChange="seleccionarUsuario()">
+            </select>
+        </div>
 
-    <h1 class="example">Videostreaming Monitor System</h1>
-
-    <button class="boton-alerta">!</button>
-    <button class="boton-bien">✔</button>
-
-    <div id="divCamaras">
+        <button class="boton-alerta">!</button>
+        <button class="boton-bien">✔</button>
     </div>
+    
 
+    
+    </div>
+    
+    
     <p></p>
-    <a>Usuarios Conectados: </a>
-    <select id="select-contenedor-usuarios" class="combobox" name="usuarios" onChange="seleccionarUsuario()">
-    </select>
-    <p></p>
-
+<div class="dashboard">
     <div class="div-contenedor-usuario">
+        <a id="obj-a-nombre">Nombre: N/A</a> <br>
         <a id="obj-a-carnet">Carnet: N/A</a>
         <p></p>
-        <a id="obj-a-nombre">Nombre: N/A</a>
-        <p></p>
+
         <img id="obj-img-est" />
         <a></a>
         <div class="div-compannero">
-            <a id="obj-a-numpersonas">Numero de Personas: </a>
+            <a id="obj-a-numpersonas"># Personas: </a>
             <p></p>
-            <a id="obj-a-numrostros">Numero de Rostros: </a>
+            <a id="obj-a-numrostros"># Rostros: </a>
             <p></p>
-            <a id="obj-a-identidad">Alerta de identidad: </a>
+            <a id="obj-a-identidad">Identidad: </a>
             <p></p>
-            <a id="obj-a-boca">Movimiento de labios: </a>
+            <a id="obj-a-boca">Mov. Labios: </a>
             <p></p>
-            <a id="obj-a-ayudante">Alerta de ayudante: </a>
+            <a id="obj-a-ayudante">Ayudantes: </a>
             <p></p>
-            <a id="obj-a-tlfndetect">Tlfn. Detectado: </a>
+            <a id="obj-a-tlfndetect">Telefono: </a>
             <p></p>
-            <a id="obj-a-compdetect">Computador Detectado: </a>
+            <a id="obj-a-compdetect">Laptop: </a>
             <p></p>
-            <a id="obj-a-dirmirada">Dirección Mirada: </a>
+            <a id="obj-a-dirmirada">Dir. Mirada: </a>
             <p></p>
-            <a id="obj-a-timemirada">Tiempo observando a esa dirección: </a>
+            <a id="obj-a-timemirada">Seg. Mirada: </a>
         </div>
     </div>
 
+
+<div class="alerts">
+    <p>
+        <span class="filter">Alertas      </span> <span class="separator"></span>
     <select id="select-filtros" class="combobox" name="filtro" onChange="seleccionarFiltro()">
         <option>Todos</option>
         <option>Identidad</option>
@@ -144,10 +257,13 @@
         <option>Telefono</option>
         <option>Computador</option>
     </select>
+    </p>
 
-    <div id='div-contenedor-historico'>
+    <div id='div-contenedor-historico'></div>
+</div>
+    
+</div>
 
-    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
     <script src=""></script>
@@ -321,48 +437,48 @@
 
         function actualizarAlertasRealTime(data) {
             //Comienzan a cambiar las alertas
-            textoNumPersonas.innerText = "Numero de Personas: " + data.numberPeople
+            textoNumPersonas.innerText = "Personas: \n" + data.numberPeople
 
-            textoNumRostros.innerText = "Numero de Rostros: " + data.numberFaces
+            textoNumRostros.innerText = "Rostros: \n" + data.numberFaces
 
             if (data.identity == 1) {
                 identidad = "Irregularidad"
             } else {
-                identidad = "Sin inconvenientes"
+                identidad = "Normalidad"
             }
-            textoAlertaIdentidad.innerText = "Detector de identidad: " + identidad
+            textoAlertaIdentidad.innerText = "ID Veri.: \n" + identidad
 
             if (data.mounthMovement == 1) {
                 boca = "En movimiento"
             } else {
                 boca = "Sin movimiento"
             }
-            textoMovimientoBoca.innerText = "Movimiento de labios: " + boca
+            textoMovimientoBoca.innerText = "Mov. Labios\n" + boca
 
             if (data.helpers == 1) {
                 ayudante = "Irregularidad"
             } else {
                 ayudante = "Normal"
             }
-            textoAlertaAyudante.innerText = "Alerta de ayudante: " + ayudante
+            textoAlertaAyudante.innerText = "Ayudante: \n" + ayudante
 
             if (data.phoneDetected == 1) {
                 telefono = "Si"
             } else {
                 telefono = "No"
             }
-            textoTlfnDetectado.innerText = "Tlfn. Detectado: " + telefono
+            textoTlfnDetectado.innerText = "Telefono: \n" + telefono
 
             if (data.laptopDetected == 1) {
                 computador = "Si"
             } else {
                 computador = "No"
             }
-            textoCompDetectado.innerText = "Computador Detectado: " + computador
+            textoCompDetectado.innerText = "Laptop:\n" + computador
 
-            textoDireccionMirada.innerText = "Dirección Mirada: " + data.gaze[0]
+            textoDireccionMirada.innerText = "Dir. Mirada:\n " + data.gaze[0]
 
-            textoTimeMirada.innerText = "Tiempo observando a esa dirección: " + data.gaze[1]
+            textoTimeMirada.innerText = "Tiemp. Mirada: \n" + data.gaze[1]
         }
 
         function alertasNoRecibidas() {
@@ -402,13 +518,14 @@
             let divAlerta = document.createElement('div')
             let idEtiqueta = idUser.toString() + (arregloAlertasTodo.get(idUser).length).toString()
             divAlerta.setAttribute("id", idEtiqueta)
+            divAlerta.setAttribute("class", "comboAlert")
 
             let imgAlerta = document.createElement('img')
-
+            imgAlerta.setAttribute("class", "alerta-imagen")
             imgAlerta.src = alertas.img
 
             let divAlertaTexto = document.createElement('div')
-            divAlertaTexto.setAttribute("class", 'div-compannero')
+            divAlertaTexto.setAttribute("class", 'div-compannero2')
 
             let textoAlerta = document.createElement('a')
             textoAlerta.innerText = alertas.alert

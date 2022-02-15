@@ -1,54 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,300;0,400;0,600;0,700;0,900;1,100;1,300;1,600&display=swap');
 body{
-    background-color: #151f3a;
+    background-color: rgb(46, 77, 109);
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+    }
+
+*{
+    box-sizing: border-box;
 }
 
-div.container{
-    display: flex;
+.div-contenedor-usuario{
+    padding: 2% 2.5%;
 }
 
-img.proctor{
-    width:75%;
-    border-radius: .5em;
-    box-shadow: 6px 10px 33px 9px rgba(0,0,0,0.43);
+#obj-a-nombre{
+    font-size: 30px;
+    font-weight: bolder;
 }
 
-.exampleFeo {
-    margin: 0;
-    background-color: bisque;
-}
-
-.div-contenedor{
-
-    display: inline-block;
-
-    margin-top: 10px;
-    margin-left: 40px;
-    margin-right: 0px;
-    margin-bottom: 20px;
-
+#obj-a-carnet{
+    font-size: 25px;
     font-weight: bold;
-    font-size: 1.5em;
 }
 
-.boton-alerta{
-    border-width: 2px;
-    border-radius: 120px;
-    border-color: #5B032A;
-    background-color: #FED3F8;
-    color: #890740;
-    width: 45px;
-    height: 45px;
-    font-size: 2em;
+#obj-img-est{
+    width: 750px;
+    height: 440px;
+    border: 2px solid white;
+}
+    
+.div-compannero{
+    display: flex;
+    flex-direction: column;
+    font-size: 10px;
+    font-weight: bold;
+    width: 100px;
+    height: 435px;
+    justify-content: space-between;
+    gap: 1px 10px;
+    position:relative;
+    bottom: 444px;
+    left: 4px;
+    padding: 19px 12px 18px 8px;
+    background-color: rgba(60, 60, 60, 0.67);
 }
 
-.boton-bien{
-    border-width: 2px;
-    border-radius: 120px;
-    border-color: #00641F;
-    background-color: #3D9558;
-    color: #FCFFD9;
-    width: 45px;
-    height: 45px;
-    font-size: 1.5em;
+.dashboard{
+    display: flex;
+    width: 100%;
 }
 
+.alerts{
+    padding: 3.5% 0;
+}
+
+#div-contenedor-historico{
+    align-self: center;
+    width: 600px;
+    height: 446px;
+    border: 3px solid #FBF8BE;
+    border-radius: 3px;
+    overflow: scroll;
+}
+
+select{
+    font-size: 15px;
+    padding: 5px;
+    background-color: rgba(237, 237, 237, 0 );
+    border-radius: 5px;
+    border: 3px solid #FBF8BE;
+    font-family: "Poppins", sans-serif;
+    color:white;
+}
+
+.filter{
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.separator{
+    width: 10px;
+    height: 10px;
+}
+
+.div-contenedor-historico img{
+    width: 10px;
+}
+
+.alerta-imagen{
+    width: 30%;
+}
