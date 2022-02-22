@@ -1,3 +1,7 @@
+from datetime import datetime
+import pyautogui
+import numpy
+
 import socketio
 import cv2
 from PIL import Image
@@ -299,12 +303,13 @@ def sendAlertToSystem(phoneAlert, laptopAlert, numberPeopleAlert,
 def checkAlerts(sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMouthMovementAlert, sendHelpersAlert, sendGazeAlert, sendIdentityTheftAlert, img):
 ###########FALTA EL GAZEEEEEE
 
-    text = ""
+    fechahora = str(datetime.now())
+    text = fechahora + "\n"
     messages = {}
     condition = False
 
     if(sendPhoneAlert):
-        text = "\nSe detectó un teléfono"
+        text = text + "\nSe detectó un teléfono"
         messages['sendPhoneAlert']: True
         condition = True
     else:
@@ -345,7 +350,7 @@ def checkAlerts(sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMout
     else:
         messages['sendIdentityTheftAlert']: False
 
-    return text, messages, condition
+    return text, messages, condition, fechahora
 
 
 def buildTextAlert(messages):
@@ -407,7 +412,7 @@ def disconnect():
 
 # -------INITIAL SETTINGS --------
 # VIDEO-CAPTURE
-cap = cv2.VideoCapture('videotest.avi')  # Abrir la camara para recibir video
+cap = cv2.VideoCapture('videotest2.wmv')  # Abrir la camara para recibir video
 # VARIABLES
 img = None
 imgOriginal = None
@@ -466,12 +471,16 @@ while True:
         sendGazeAlert = gazeAlert(gazeTime(gazeDirection), gazeRatio)
         sendIdentityTheftAlert = identityTheftMethod(face_names)
 
-        alertText, messages, alertVerification = checkAlerts(sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMouthMovementAlert,
+        alertText, messages, alertVerification, fechahora = checkAlerts(sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMouthMovementAlert,
                                                sendHelpersAlert, sendGazeAlert, sendIdentityTheftAlert, img)
 
         # sendAlertToSystem(sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMouthMovementAlert,
         #                  sendHelpersAlert, sendGazeAlert, sendIdentityTheftAlert, img)
 
+        screen = None
+        if(alertVerification == True):
+            screen = numpy.asarray(pyautogui.screenshot())
+        
         drawObjectsAndPeople(img, numberPeople, phoneDetected, laptopDetected)
 
         # FIN ALERTAS QUE VAS A ENVIAR AL CUADRO DE TIEMPO REAL
@@ -515,18 +524,33 @@ while True:
                 "-------------------------------------COSAS EXTRAÑAS----------------------------------------")
 
             imgPlus = convert_image_to_jpeg(img)
+            capture = convert_image_to_jpeg(screen)
 
+            print(fechahora)
             sio.emit('dataAlert', {
                 'carnet': carnet,
                 'alert': alertText,
                 'img': imgPlus,
+                'capture': capture,
                 'alertPhone': int(sendPhoneAlert),
                 'alertLaptop': int(sendLaptopAlert),
                 'alertNumberPeople': int(sendNumberPeopleAlert),
                 'alertMounth': int(sendMouthMovementAlert),
                 'alertHelpers': int(sendHelpersAlert),
-                'alertIdentity': int(sendIdentityTheftAlert)
+                'alertIdentity': int(sendIdentityTheftAlert),
+                'time': str(fechahora)
             })
+
+            # Capturar pantalla.
+            
+            # Guardar imagen.
+            # screenshot.save("screenshot.png")
+            #capture = numpy.asarray(screenshot)
+            #print("screenshot: --")
+            #print(frame)
+            #print("img:")
+            #print(img)
+            #break
 
         # print("2-------sio.emit")
 

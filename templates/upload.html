@@ -8,19 +8,87 @@
     <title>Document</title>
 </head>
 
-<body>
-    <form action="/registro" method="POST" enctype="multipart/form-data">
-        <input type="number" name="carnet" placeholder="Carnet">
-        <input type="text" name="nombre" placeholder="Nombre">
-        <input type="text" name="apellido" placeholder="Apellido">        
-        <input type="file" name="imagen">
-        <input type="submit">
-    </form>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,300;0,400;0,600;0,700;0,900;1,100;1,300;1,600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;700&family=Noto+Sans:wght@400;700&family=Play&display=swap');
 
-    <script>
-        var students = []
-        var alumno = new Object()
-    </script>
+    body {
+        background: rgb(0, 59, 87);
+        font-family: "Noto Sans", sans-serif;
+        /* background: linear-gradient(0deg, rgba(0, 59, 87, 1) 0%, rgba(0, 90, 162, 1) 100%); */
+        color: #fff;
+        margin: 0;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    .navbar {
+        display: flex;
+        flex-direction: row;
+        background: rgb(253, 187, 45);
+        background: linear-gradient(90deg, rgba(253, 187, 45, 1) 0%, rgba(250, 152, 68, 1) 50%, rgba(253, 187, 45, 1) 89%);
+        justify-content: space-between;
+        height: 68px;
+        color: #000;
+        align-items: center;
+        padding: 0 2%;
+    }
+
+    .controls {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    h2.title {
+        font-family: "Heebo", sans-serif;
+        font-weight: bold;
+        letter-spacing: 2px;
+    }
+
+    .btn-back {
+        border: 3px solid #000;
+        border-radius: 5px;
+        background-color: transparent;
+        font-size: 1.25rem;
+        margin-left: 20px;
+    }
+
+    .btn-send {
+        font-size: 15px;
+        padding: 5px;
+        background-color: transparent;
+        border-radius: 5px;
+        border: 3px solid rgba(253, 187, 45, 1);
+        font-family: "Noto Sans", sans-serif;
+        color: white;
+    }
+
+    .form {
+        margin: 20px;
+    }
+</style>
+
+<body>
+
+    <div class="navbar">
+        <h2 class="title">UNIMET <span class="width"></span> <span class="branding">PROCTOR</span></h2>
+        <div class="controls">
+            <button class="btn-back" onClick="openUpload()"> ⇦ Regresar</button>
+        </div>
+    </div>
+
+    <form class="form" action="/registro" method="POST" enctype="multipart/form-data">
+        <div>
+            <input type="number" name="carnet" placeholder="Carnet">
+            <input type="text" name="nombre" placeholder="Nombre">
+            <input type="text" name="apellido" placeholder="Apellido">
+            <input class="btn-send" type="file" name="imagen">
+        </div>
+        <input class="btn-send" type="submit">
+    </form>
 
 </body>
 

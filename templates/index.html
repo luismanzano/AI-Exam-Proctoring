@@ -6,46 +6,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Videocall System</title>
+    <title>UNIMET PROCTOR</title>
 
-<!--    <link rel="stylesheet" href="{{url_for('static',filename='styles/main.css')}}">-->
+    <!--    <link rel="stylesheet" href="{{url_for('static',filename='styles/main.css')}}">-->
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,300;0,400;0,600;0,700;0,900;1,100;1,300;1,600&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;700&family=Noto+Sans:wght@400;700&family=Play&display=swap');        
-        body{
-            background: rgb(0,59,87);
+        @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;700&family=Noto+Sans:wght@400;700&family=Play&display=swap');
+
+        body {
+            background: rgb(0, 59, 87);
             font-family: "Noto Sans", sans-serif;
-            background: linear-gradient(0deg, rgba(0,59,87,1) 0%, rgba(0,90,162,1) 100%);
+            background: linear-gradient(0deg, rgba(0, 59, 87, 1) 0%, rgba(0, 90, 162, 1) 100%);
             color: #fff;
             margin: 0;
-            }
-        
-        *{
+        }
+
+        * {
             box-sizing: border-box;
         }
-        
-        .div-contenedor-usuario{
+
+        .div-contenedor-usuario {
             padding: 0 1%;
         }
-        
-        #obj-a-nombre{
+
+        #obj-a-nombre {
             font-size: 30px;
             font-weight: bolder;
         }
 
-        #obj-a-carnet{
+        #obj-a-carnet {
             font-size: 25px;
             font-weight: bold;
         }
 
-        #obj-img-est{
+        #obj-img-est {
             width: 750px;
             height: 440px;
             box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
         }
-            
-        .div-compannero{
+
+        .div-compannero {
             display: flex;
             flex-direction: column;
             font-size: 10px;
@@ -54,69 +55,78 @@
             height: 435px;
             justify-content: space-between;
             gap: 1px 10px;
-            position:relative;
+            position: relative;
             bottom: 444px;
             left: 4px;
             padding: 19px 12px 18px 8px;
             background-color: rgba(60, 60, 60, 0.60);
         }
 
-        .dashboard{
+        .dashboard {
             display: flex;
             width: 100%;
-            padding-top: 2%;;
+            padding-top: 2%;
+            ;
         }
 
-        .alerts{
+        .alerts {
             padding: 1% 0;
         }
 
-        #div-contenedor-historico{
+        #div-contenedor-historico {
             align-self: center;
             width: 630px;
             height: 500px;
-            border: 3px solid rgba(253,187,45,1);
+            border: 3px solid rgba(253, 187, 45, 1);
             border-radius: 3px;
             overflow-y: scroll;
             overflow-x: hidden;
         }
 
-        select{
+        select {
             font-size: 15px;
             padding: 5px;
-            background-color: rgba(237, 237, 237, 0 );
+            background-color: rgba(237, 237, 237, 0);
             border-radius: 5px;
-            border: 3px solid rgba(253,187,45,1);
+            border: 3px solid rgba(253, 187, 45, 1);
             font-family: "Noto Sans", sans-serif;
-            color:white;
+            color: black;
         }
 
-        .custom-select2{
+        .custom-select2 {
             border: 3px solid #000;
             border-radius: 5px;
         }
 
-        .filter{
+        .filter {
             font-size: 25px;
             font-weight: bold;
         }
 
-        .separator{
+        .separator {
             width: 10px;
             height: 10px;
         }
 
-        .alerta-imagen{
+        .alerta-imagen {
+            display: flex;
             height: 230px;
             margin-right: 3px;
         }
 
-        .div-compannero2{
+        .alerta-capture{
+            display: block;
+            height: 400px;
+            margin-right: 3px;
+        }
+
+        .div-compannero2 {
             padding: 3px 1px;
         }
 
-        .comboAlert{
-            display: flex;
+        .comboAlert {
+            /* display: flex; */
+            margin-bottom: 20px;
             font-size: 10px;
             justify-content: space-evenly;
             align-items: initial;
@@ -124,11 +134,11 @@
             border-bottom: 3px solid white;
         }
 
-        .navbar{
+        .navbar {
             display: flex;
             flex-direction: row;
-            background: rgb(253,187,45);
-            background: linear-gradient(90deg, rgba(253,187,45,1) 0%, rgba(250,152,68,1) 50%, rgba(253,187,45,1) 89%);
+            background: rgb(253, 187, 45);
+            background: linear-gradient(90deg, rgba(253, 187, 45, 1) 0%, rgba(250, 152, 68, 1) 50%, rgba(253, 187, 45, 1) 89%);
             justify-content: space-between;
             height: 68px;
             color: #000;
@@ -136,25 +146,25 @@
             padding: 0 2%;
         }
 
-        .controls{
+        .controls {
             display: flex;
             flex-direction: row;
             align-items: center;
         }
 
-        h2.title{
+        h2.title {
             font-family: "Heebo", sans-serif;
             font-weight: bold;
             letter-spacing: 2px;
         }
 
-        span.branding{
+        span.branding {
             font-family: "Play", sans-serif;
             letter-spacing: 1px;
         }
 
-        span.width{
-            color: rgba(0,0,0,0)
+        span.width {
+            color: rgba(0, 0, 0, 0)
         }
 
         /*
@@ -162,111 +172,134 @@
         */
 
         /* width */
-::-webkit-scrollbar {
-  width: 10px;
-}
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
 
-/* Track */
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0);
-}
+        /* Track */
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0);
+        }
 
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.6);
-}
+        /* Handle */
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.6);
+        }
 
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.6);
-}
+        /* Handle on hover */
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.6);
+        }
 
-
+        .btn-upload {
+            border: 3px solid #000;
+            border-radius: 5px;
+            background-color: transparent;
+            font-size: 1.25rem;
+            margin-left: 20px;
+        }
     </style>
-
-
-    <script>
-        function accion() {
-            alert("madafaka! ")
-        }    
-    </script>
 
 </head>
 
 <body class="">
     <div class="navbar">
         <h2 class="title">UNIMET <span class="width"></span> <span class="branding">PROCTOR</span></h2>
-    <div class="controls">
-        <div id="divCamaras">
-        </div>
-        <a>Usuarios Conectados: </a>
-        <div class="custom-select2">
-            <select id="select-contenedor-usuarios" class="combobox" name="usuarios" onChange="seleccionarUsuario()">
-            </select>
+        <div class="controls">
+            <div id="divCamaras">
+            </div>
+            <a>Usuarios Conectados: </a>
+            <div class="custom-select2">
+                <select id="select-contenedor-usuarios" class="combobox" name="usuarios"
+                    onChange="seleccionarUsuario()">
+                </select>
+            </div>
+
+            <!-- <button class="boton-alerta">!</button>
+            <button class="boton-bien">✔</button> -->
+            <button class="btn-upload" onClick="openUpload()"> ⇧ Cargar</button>
         </div>
 
-        <button class="boton-alerta">!</button>
-        <button class="boton-bien">✔</button>
-    </div>
-    
 
-    
+
     </div>
-    
-    
+
+
     <p></p>
-<div class="dashboard">
-    <div class="div-contenedor-usuario">
-        <a id="obj-a-nombre">Nombre: N/A</a> <br>
-        <a id="obj-a-carnet">Carnet: N/A</a>
-        <p></p>
+    <div class="dashboard">
+        <div class="div-contenedor-usuario">
+            <a id="obj-a-nombre">Nombre: N/A</a> <br>
+            <a id="obj-a-carnet">Carnet: N/A</a>
+            <p></p>
 
-        <img id="obj-img-est" />
-        <a></a>
-        <div class="div-compannero">
-            <a id="obj-a-numpersonas"># Personas: </a>
-            <p></p>
-            <a id="obj-a-numrostros"># Rostros: </a>
-            <p></p>
-            <a id="obj-a-identidad">Identidad: </a>
-            <p></p>
-            <a id="obj-a-boca">Mov. Labios: </a>
-            <p></p>
-            <a id="obj-a-ayudante">Ayudantes: </a>
-            <p></p>
-            <a id="obj-a-tlfndetect">Telefono: </a>
-            <p></p>
-            <a id="obj-a-compdetect">Laptop: </a>
-            <p></p>
-            <a id="obj-a-dirmirada">Dir. Mirada: </a>
-            <p></p>
-            <a id="obj-a-timemirada">Seg. Mirada: </a>
+            <img id="obj-img-est" />
+            <a></a>
+            <div class="div-compannero">
+                <a id="obj-a-numpersonas"># Personas: </a>
+                <p></p>
+                <a id="obj-a-numrostros"># Rostros: </a>
+                <p></p>
+                <a id="obj-a-identidad">Identidad: </a>
+                <p></p>
+                <a id="obj-a-boca">Mov. Labios: </a>
+                <p></p>
+                <a id="obj-a-ayudante">Ayudantes: </a>
+                <p></p>
+                <a id="obj-a-tlfndetect">Telefono: </a>
+                <p></p>
+                <a id="obj-a-compdetect">Laptop: </a>
+                <p></p>
+                <a id="obj-a-dirmirada">Dir. Mirada: </a>
+                <p></p>
+                <a id="obj-a-timemirada">Seg. Mirada: </a>
+            </div>
         </div>
+
+
+        <div class="alerts">
+            <p>
+                <span class="filter">Alertas </span> <span class="separator"></span>
+                <select id="select-filtros" class="combobox" name="filtro" onChange="seleccionarFiltro()">
+                    <option>Todos</option>
+                    <option>Identidad</option>
+                    <option>Ayudantes</option>
+                    <option>Mov. Labios</option>
+                    <option>Mov. Mirada</option>
+                    <option>Telefono</option>
+                    <option>Computador</option>
+                </select>
+            </p>
+
+            <div id='div-contenedor-historico'></div>
+        </div>
+
     </div>
-
-
-<div class="alerts">
-    <p>
-        <span class="filter">Alertas      </span> <span class="separator"></span>
-    <select id="select-filtros" class="combobox" name="filtro" onChange="seleccionarFiltro()">
-        <option>Todos</option>
-        <option>Identidad</option>
-        <option>Ayudantes</option>
-        <option>Mov. Labios</option>
-        <option>Mov. Mirada</option>
-        <option>Telefono</option>
-        <option>Computador</option>
-    </select>
-    </p>
-
-    <div id='div-contenedor-historico'></div>
-</div>
-    
-</div>
 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
-    <script src=""></script>
+    <script>
+
+        if (!('Notification' in window)) {
+            alert("Este navegador no soporta el sistema de alertas (notificaciones multi-usuario)");
+        } else {
+            console.log("si lo soporta")
+            if (Notification.permission !== 'denied') {
+                console.log("notificacion permitida")
+                console.log(Notification.permission)
+                Notification.requestPermission(function (permission) {
+                    console.log("solicitado el permiso")
+                });
+            }
+        }
+
+    </script>
+
+    <script>
+        function openUpload() {
+            window.open("http://localhost:5000/registro", "Registrar usuarios")
+        }
+    </script>
+
     <script>
 
         var numeroConectados = 0
@@ -390,6 +423,8 @@
                     let usuarioNoEnfocado = usuariosData.get(msg.carnet.toString())
                     usuarioNoEnfocado.ultima_img = msg.img
 
+                    mostrarNotificacion(msg.nombre, msg.carnet)
+
                 }
 
             }
@@ -404,6 +439,9 @@
         socket.on('historicAlert', (msg) => {
 
             carnetUsuarioActual = selectListaUsuario.options[selectListaUsuario.selectedIndex].id
+
+            console.log(msg)
+            console.log(new Date(msg.time))
 
             if (msg.carnet.toString() == carnetUsuarioActual.toString()) {
 
@@ -524,6 +562,10 @@
             imgAlerta.setAttribute("class", "alerta-imagen")
             imgAlerta.src = alertas.img
 
+            let capAlerta = document.createElement('img')
+            capAlerta.setAttribute("class", "alerta-capture")
+            capAlerta.src = alertas.capture            
+
             let divAlertaTexto = document.createElement('div')
             divAlertaTexto.setAttribute("class", 'div-compannero2')
 
@@ -533,6 +575,7 @@
             divAlerta.appendChild(imgAlerta)
             divAlertaTexto.appendChild(textoAlerta)
             divAlerta.appendChild(divAlertaTexto)
+            divAlerta.appendChild(capAlerta)
             divAlertaUsuario.appendChild(divAlerta)
 
             asignarFiltros(alertas, idUser, idEtiqueta)
@@ -554,6 +597,7 @@
             let divAlerta = document.createElement('div')
             let idEtiqueta = idUser.toString() + (arregloAlertasTodo.get(idUser).length).toString()
             divAlerta.setAttribute("id", idEtiqueta)
+            divAlerta.setAttribute("class", "comboAlert")
 
             let imgAlerta = document.createElement('img')
             imgAlerta.src = alertas.img
@@ -615,7 +659,7 @@
 
             arregloAlertasTodo.get(idUser).push(idEtiqueta)
 
-            if (alertas.alertPhone == 1){
+            if (alertas.alertPhone == 1) {
                 arregloAlertasTelefono.get(idUser).push(idEtiqueta)
             }
 
@@ -623,35 +667,142 @@
                 arregloAlertasComputador.get(idUser).push(idEtiqueta)
             }
 
-            if (alertas.alertNumberPeople == 1){
+            if (alertas.alertNumberPeople == 1) {
                 arregloAlertasAyudantes.get(idUser).push(idEtiqueta)
             }
 
-            if (alertas.alertMounth == 1){
+            if (alertas.alertMounth == 1) {
                 arregloAlertasLabios.get(idUser).push(idEtiqueta)
             }
 
-            if (alertas.alertHelpers == 1){
+            if (alertas.alertHelpers == 1) {
                 arregloAlertasAyudantes.get(idUser).push(idEtiqueta)
             }
 
-            if (alertas.alertIdentity == 1){
+            if (alertas.alertIdentity == 1) {
                 arregloAlertasIdentidad.get(idUser).push(idEtiqueta)
             }
 
         }
 
-        function seleccionarFiltro(){
+        function seleccionarFiltro() {
             let opcionFiltro = selectFiltro.options[selectFiltro.selectedIndex].innerText
             let idUser = carnetUsuarioActual.toString() + "-alertas"
 
-            if (opcionFiltro.toString() == "Identidad"){
-                arregloAlertasIdentidad.get(idUser).forEach(idEtiqueta => {
+            //Filtrado "Todos"
+            if (opcionFiltro.toString() == "Todos") {
+                arregloAlertasTodo.get(idUser).forEach(idEtiqueta => {
+
                     etiqueta = document.getElementById(idEtiqueta)
-                    etiqueta.style.display = "None"
-                });
+                    etiqueta.style.display = "Flex"
+
+                })
             }
-            
+
+            //Filtrado "identidad"
+            if (opcionFiltro.toString() == "Identidad") {
+                arregloAlertasTodo.get(idUser).forEach(idEtiqueta => {
+                    if (!arregloAlertasIdentidad.get(idUser).includes(idEtiqueta)) {
+                        etiqueta = document.getElementById(idEtiqueta)
+                        etiqueta.style.display = "None"
+                    } else {
+                        etiqueta = document.getElementById(idEtiqueta)
+                        etiqueta.style.display = "Flex"
+                    }
+
+                })
+            }
+
+            //Filtrado "Ayudantes"
+            if (opcionFiltro.toString() == "Ayudantes") {
+                arregloAlertasTodo.get(idUser).forEach(idEtiqueta => {
+                    if (!arregloAlertasAyudantes.get(idUser).includes(idEtiqueta)) {
+                        etiqueta = document.getElementById(idEtiqueta)
+                        etiqueta.style.display = "None"
+                    } else {
+                        etiqueta = document.getElementById(idEtiqueta)
+                        etiqueta.style.display = "Flex"
+                    }
+
+                })
+            }
+
+            //Filtrado "Mov. Labios"
+            if (opcionFiltro.toString() == "Mov. Labios") {
+                arregloAlertasTodo.get(idUser).forEach(idEtiqueta => {
+                    if (!arregloAlertasLabios.get(idUser).includes(idEtiqueta)) {
+                        etiqueta = document.getElementById(idEtiqueta)
+                        etiqueta.style.display = "None"
+                    } else {
+                        etiqueta = document.getElementById(idEtiqueta)
+                        etiqueta.style.display = "Flex"
+                    }
+
+                })
+            }
+
+            //Filtrado Mov. Mirada
+            if (opcionFiltro.toString() == "Mov. Mirada") {
+                arregloAlertasTodo.get(idUser).forEach(idEtiqueta => {
+                    if (!arregloAlertasMirada.get(idUser).includes(idEtiqueta)) {
+                        etiqueta = document.getElementById(idEtiqueta)
+                        etiqueta.style.display = "None"
+                    } else {
+                        etiqueta = document.getElementById(idEtiqueta)
+                        etiqueta.style.display = "Flex"
+                    }
+
+                })
+            }
+
+            //Filtrado Telefono
+            if (opcionFiltro.toString() == "Telefono") {
+                arregloAlertasTodo.get(idUser).forEach(idEtiqueta => {
+                    if (!arregloAlertasTelefono.get(idUser).includes(idEtiqueta)) {
+                        etiqueta = document.getElementById(idEtiqueta)
+                        etiqueta.style.display = "None"
+                    } else {
+                        etiqueta = document.getElementById(idEtiqueta)
+                        etiqueta.style.display = "Flex"
+                    }
+
+                })
+            }
+
+            //Filtrado Telefono
+            if (opcionFiltro.toString() == "Computador") {
+                arregloAlertasTodo.get(idUser).forEach(idEtiqueta => {
+                    if (!arregloAlertasComputador.get(idUser).includes(idEtiqueta)) {
+                        etiqueta = document.getElementById(idEtiqueta)
+                        etiqueta.style.display = "None"
+                    } else {
+                        etiqueta = document.getElementById(idEtiqueta)
+                        etiqueta.style.display = "Flex"
+                    }
+
+                })
+            }
+
+        }
+
+        function mostrarNotificacion(nombre, carnet, img) {
+            // Si está bien vamos a crear una notificación
+            // Primero vamos a crear una variables las 
+            // cuales forman nuestra norificación
+            var body = "Deberias dar un vistazo también al estudiante " + nombre.toString() + ", detectamos un comportamiento sospechoso.";
+            var title = nombre.toString() + " - " + carnet.toString()
+            var options = {
+                body: body,      //El texto o resumen de lo que deseamos notificar.
+                icon: img,      //El URL de una imágen para usarla como icono.
+                lang: "ES",      //El idioma utilizado en la notificación.
+                tag: 'notify',   //Un ID para el elemento para hacer get/set de ser necesario.
+                dir: 'auto',     // izquierda o derecha (auto).
+                renotify: "true" //Se puede volver a usar la notificación, default: false.
+            }
+            // Creamos la notificación con las opciones que pusimos arriba.
+            var notification = new Notification(title, options);
+            // Cerramos la notificación.
+            setTimeout(notification.close.bind(notification), 5000);
         }
 
     </script>
