@@ -217,7 +217,7 @@ def mouthMovementAlertMethod(mouthOpen):
     mouthOpenAlert.append(mouthOpen)
     counter = 0
     for alert in mouthOpenAlert:
-        if alert >= 0.3:
+        if alert >= 0.325:
             counter += 1
     if counter < 5:
         return False
@@ -238,7 +238,7 @@ def helpersAlertMethod(numberFaces):
     print("HELPERS TO THE STUDENT", helpersAlert)
     counter = 0
     for alert in helpersAlert:
-        if alert-1 == helpers:
+        if alert-1 == helpers and helpers > 1:
             counter += 1
     if counter != 10:
         return False
@@ -412,7 +412,7 @@ def disconnect():
 
 # -------INITIAL SETTINGS --------
 # VIDEO-CAPTURE
-cap = cv2.VideoCapture('videotest2.wmv')  # Abrir la camara para recibir video
+cap = cv2.VideoCapture(0)  # Abrir la camara para recibir video
 # VARIABLES
 img = None
 imgOriginal = None
