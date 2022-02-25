@@ -1,6 +1,7 @@
 from datetime import datetime
 import pyautogui
 import numpy
+from tkinter import *
 
 import socketio
 import cv2
@@ -28,6 +29,17 @@ nombre = input()
 sio = socketio.Client()
 sio.connect('http://127.0.0.1:5000')
 print('Mi identificador es: ', sio.sid)
+
+#INTERFAZ
+
+""" ventana = Tk()
+canva = Canvas(ventana, width=850, height=550)
+ventana.geometry("850x550")
+canva.place(x=0, y=0)
+Button(ventana, text="Correr Modelo",
+       font=("italic bold", 14), width=20).place(x=300, y=150)
+
+ventana.mainloop() """
 
 # NECESSARY AND AUXILIARY METHODS:
 
@@ -412,7 +424,7 @@ def disconnect():
 
 # -------INITIAL SETTINGS --------
 # VIDEO-CAPTURE
-cap = cv2.VideoCapture('videotest2.wmv')  # Abrir la camara para recibir video
+cap = cv2.VideoCapture(0)  # Abrir la camara para recibir video
 # VARIABLES
 img = None
 imgOriginal = None
@@ -479,7 +491,7 @@ while True:
 
         screen = None
         if(alertVerification == True):
-            screen = numpy.asarray(pyautogui.screenshot())
+            screen = numpy.asarray(pyautogui.screenshot().convert("RGB"))
         
         drawObjectsAndPeople(img, numberPeople, phoneDetected, laptopDetected)
 
@@ -530,7 +542,7 @@ while True:
             sio.emit('dataAlert', {
                 'carnet': carnet,
                 'alert': alertText,
-                'img': imgPlus,
+                'img': imgOriginal,
                 'capture': capture,
                 'alertPhone': int(sendPhoneAlert),
                 'alertLaptop': int(sendLaptopAlert),

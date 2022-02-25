@@ -109,29 +109,38 @@
         }
 
         .alerta-imagen {
-            display: flex;
             height: 230px;
             margin-right: 3px;
         }
 
-        .alerta-capture{
+        .alerta-capture {
             display: block;
-            height: 400px;
-            margin-right: 3px;
+            height: 300px;
+            margin-left: 20px;
+        }
+
+        .alerta-capture-texto {
+            font-size: 10px;
+            margin-left: 20px;
         }
 
         .div-compannero2 {
             padding: 3px 1px;
         }
 
-        .comboAlert {
-            /* display: flex; */
+        .comboAlertTotal {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 5px solid white;
+        }
+
+        .comboAlertImgDescrip {
+            display: flex;
+            margin-top: 20px;
             margin-bottom: 20px;
             font-size: 10px;
             justify-content: space-evenly;
             align-items: initial;
-            padding-bottom: 5px;
-            border-bottom: 3px solid white;
         }
 
         .navbar {
@@ -360,7 +369,7 @@
 
             crearArreglosAlertas(msg.carnet.toString() + "-alertas")
 
-            if (usuariosConectados.indexOf(msg.id) == -1) {//Si entra un usuario con un id desconocido
+            if (!usuariosData.has(msg.carnet)) {//Si entra un usuario con un id desconocido
 
                 console.log("Sistema: Nuevo usuario " + msg.id)
 
@@ -440,16 +449,17 @@
 
             carnetUsuarioActual = selectListaUsuario.options[selectListaUsuario.selectedIndex].id
 
-            console.log(msg)
-            console.log(new Date(msg.time))
+            //console.log(msg)
+            //console.log(new Date(msg.time))
 
             if (msg.carnet.toString() == carnetUsuarioActual.toString()) {
 
-                crearAlertasUsuarioSeleccionado(msg)
+                crearAlertasUsuarioSeleccionado(msg, true)
 
             } else {
 
-                crearAlertasUsuarioOculto(msg)
+                //crearAlertasUsuarioOculto(msg)
+                crearAlertasUsuarioSeleccionado(msg, false)
 
             }
 
@@ -540,7 +550,7 @@
             textoTimeMirada.innerText = "Tiempo observando a esa dirección: ..."
         }
 
-        function crearAlertasUsuarioSeleccionado(alertas) {
+        function crearAlertasUsuarioSeleccionado(alertas, usuarioActual) {
 
             let divAlertaUsuario = null
             let idUser = alertas.carnet.toString() + "-alertas"
@@ -556,7 +566,9 @@
             let divAlerta = document.createElement('div')
             let idEtiqueta = idUser.toString() + (arregloAlertasTodo.get(idUser).length).toString()
             divAlerta.setAttribute("id", idEtiqueta)
-            divAlerta.setAttribute("class", "comboAlert")
+            divAlerta.setAttribute("class", "comboAlertTotal")
+            let divContenedorAlerta = document.createElement('div')
+            divContenedorAlerta.setAttribute("class", "comboAlertImgDescrip")
 
             let imgAlerta = document.createElement('img')
             imgAlerta.setAttribute("class", "alerta-imagen")
@@ -564,7 +576,7 @@
 
             let capAlerta = document.createElement('img')
             capAlerta.setAttribute("class", "alerta-capture")
-            capAlerta.src = alertas.capture            
+            capAlerta.src = alertas.capture
 
             let divAlertaTexto = document.createElement('div')
             divAlertaTexto.setAttribute("class", 'div-compannero2')
@@ -572,13 +584,23 @@
             let textoAlerta = document.createElement('a')
             textoAlerta.innerText = alertas.alert
 
-            divAlerta.appendChild(imgAlerta)
+            let textoCapture = document.createElement('a')
+            textoCapture.innerText = "Capture de pantalla:"
+            textoCapture.setAttribute("class", "alerta-capture-texto")
+
+            divContenedorAlerta.appendChild(imgAlerta)
             divAlertaTexto.appendChild(textoAlerta)
-            divAlerta.appendChild(divAlertaTexto)
+            divContenedorAlerta.appendChild(divAlertaTexto)
+            divAlerta.appendChild(divContenedorAlerta)
+            divAlerta.appendChild(textoCapture)
             divAlerta.appendChild(capAlerta)
             divAlertaUsuario.appendChild(divAlerta)
 
-            asignarFiltros(alertas, idUser, idEtiqueta)
+            if (!usuarioActual) {
+                divAlertaUsuario.style.display = "None"
+            }
+
+            asignarFiltros(alertas, idUser, idEtiqueta, usuarioActual)
 
         }
 
@@ -619,7 +641,7 @@
         }
 
         function ocultarOtrasAlertas(carnet) {
-            console.log("ocultar alertas: ")
+            console.log("ocultar/mostrar alertas del nuevo usuario seleccionado: ")
             for (let usuario of usuariosData) {
 
                 if (usuario[0].toString() != carnet.toString()) {
@@ -635,6 +657,7 @@
                     let id = usuario[0].toString() + "-alertas"
                     divAlertaMostrar = document.getElementById(id)
                     divAlertaMostrar.style.display = "block"
+                    seleccionarFiltro()
 
                 }
 
@@ -655,7 +678,7 @@
 
         }
 
-        function asignarFiltros(alertas, idUser, idEtiqueta) {
+        function asignarFiltros(alertas, idUser, idEtiqueta, usuarioActual) {
 
             arregloAlertasTodo.get(idUser).push(idEtiqueta)
 
@@ -667,9 +690,10 @@
                 arregloAlertasComputador.get(idUser).push(idEtiqueta)
             }
 
-            if (alertas.alertNumberPeople == 1) {
-                arregloAlertasAyudantes.get(idUser).push(idEtiqueta)
-            }
+            //AGREGAR MIRADA <----------- LUEGO DE PASARLA POR EL BACK
+            //if (alertas.alertNumberPeople == 1) {
+            //    arregloAlertasAyudantes.get(idUser).push(idEtiqueta)
+            //}
 
             if (alertas.alertMounth == 1) {
                 arregloAlertasLabios.get(idUser).push(idEtiqueta)
@@ -683,6 +707,36 @@
                 arregloAlertasIdentidad.get(idUser).push(idEtiqueta)
             }
 
+            if (usuarioActual) {//Revisamos los filtros del usuario actual para
+                //esta etiqueta en cuestión
+                let opcionFiltro = selectFiltro.options[selectFiltro.selectedIndex].innerText
+                if (opcionFiltro.toString() != "Todos") {
+
+                    let etiqueta = document.getElementById(idEtiqueta)
+                    let visibilidad = "None"
+
+                    if (opcionFiltro.toString() == "Identidad" &&
+                        alertas.alertIdentity == 1) visibilidad = "Block"
+
+                    if (opcionFiltro.toString() == "Ayudantes" &&
+                        alertas.alertHelpers == 1) visibilidad = "Block"
+
+                    if (opcionFiltro.toString() == "Mov. Labios" &&
+                        alertas.alertMounth == 1) visibilidad = "Block"
+
+                    /*if (opcionFiltro.toString() == "Mov. Mirada" &&
+                    alertas.alertIdentity == 1) visibilidad = "Block" */
+
+                    if (opcionFiltro.toString() == "Telefono" &&
+                        alertas.alertPhone == 1) visibilidad = "Block"
+
+                    if (opcionFiltro.toString() == "Computador" &&
+                        alertas.alertLaptop == 1) visibilidad = "Block"
+
+                    etiqueta.style.display = visibilidad
+                }
+            }
+
         }
 
         function seleccionarFiltro() {
@@ -694,7 +748,7 @@
                 arregloAlertasTodo.get(idUser).forEach(idEtiqueta => {
 
                     etiqueta = document.getElementById(idEtiqueta)
-                    etiqueta.style.display = "Flex"
+                    etiqueta.style.display = "Block"
 
                 })
             }
@@ -707,7 +761,7 @@
                         etiqueta.style.display = "None"
                     } else {
                         etiqueta = document.getElementById(idEtiqueta)
-                        etiqueta.style.display = "Flex"
+                        etiqueta.style.display = "Block"
                     }
 
                 })
@@ -721,7 +775,7 @@
                         etiqueta.style.display = "None"
                     } else {
                         etiqueta = document.getElementById(idEtiqueta)
-                        etiqueta.style.display = "Flex"
+                        etiqueta.style.display = "Block"
                     }
 
                 })
@@ -735,7 +789,7 @@
                         etiqueta.style.display = "None"
                     } else {
                         etiqueta = document.getElementById(idEtiqueta)
-                        etiqueta.style.display = "Flex"
+                        etiqueta.style.display = "Block"
                     }
 
                 })
@@ -749,7 +803,7 @@
                         etiqueta.style.display = "None"
                     } else {
                         etiqueta = document.getElementById(idEtiqueta)
-                        etiqueta.style.display = "Flex"
+                        etiqueta.style.display = "Block"
                     }
 
                 })
@@ -763,7 +817,7 @@
                         etiqueta.style.display = "None"
                     } else {
                         etiqueta = document.getElementById(idEtiqueta)
-                        etiqueta.style.display = "Flex"
+                        etiqueta.style.display = "Block"
                     }
 
                 })
@@ -777,7 +831,7 @@
                         etiqueta.style.display = "None"
                     } else {
                         etiqueta = document.getElementById(idEtiqueta)
-                        etiqueta.style.display = "Flex"
+                        etiqueta.style.display = "Block"
                     }
 
                 })
