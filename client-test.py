@@ -250,7 +250,7 @@ def helpersAlertMethod(numberFaces):
     print("HELPERS TO THE STUDENT", helpersAlert)
     counter = 0
     for alert in helpersAlert:
-        if alert-1 == helpers:
+        if alert-1 == helpers and helpers > 1:
             counter += 1
     if counter != 10:
         return False
