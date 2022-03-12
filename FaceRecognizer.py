@@ -6,9 +6,9 @@ import time
 cap = cv2.VideoCapture(0)
 
 class FaceRecognizer:
-    def __init__(self):
+    def __init__(self, carnet):
         # SAMPLE PICTURE OF THE PERSON WE WANT TO DETECT
-        self.target_individual_img = face_recognition.load_image_file('Faces/Luis_Fernando.jpg')
+        self.target_individual_img = face_recognition.load_image_file(f'Faces/{carnet}.jpg')
         self.target_individual_encoding = face_recognition.face_encodings(self.target_individual_img)[0]
         #print("TARGET INDIVIDUAL ENCODING ", self.target_individual_encoding)
         self.known_face_encodings = [
@@ -16,7 +16,7 @@ class FaceRecognizer:
         ]
 
         self.known_face_names = [
-            "Luis Fernando"
+            "Cara Validada"
         ]
 
         # INTIALIZE THE VARIABLES WE NEED TO GET THE MODEL UP AND RUNNING

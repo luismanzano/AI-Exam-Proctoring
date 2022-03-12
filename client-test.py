@@ -440,7 +440,7 @@ gazePlace = True
 faceDetector = FaceDetector()
 eyesAndMouth = EyesAndMouth()
 objectDetector = ObjectDetector()
-faceRecognizer = FaceRecognizer()
+faceRecognizer = FaceRecognizer(carnet)
 
 
 while True:
@@ -492,6 +492,7 @@ while True:
         screen = None
         if(alertVerification == True):
             screen = numpy.asarray(pyautogui.screenshot().convert("RGB"))
+            screen = cv2.cvtColor(screen, cv2.COLOR_BGR2RGB)
         
         drawObjectsAndPeople(img, numberPeople, phoneDetected, laptopDetected)
 
