@@ -1,6 +1,8 @@
+import sys
 from datetime import datetime
 import pyautogui
 import numpy
+import tkinter as tk
 from tkinter import *
 
 import socketio
@@ -20,26 +22,63 @@ from EyesAndMouth import EyesAndMouth
 from ObjectDetector import ObjectDetector
 from FaceRecognizer import FaceRecognizer
 
+
+def destroyWindow():
+    global carnet
+    global txtCarnet
+    carnet = txtCarnet.get("1.0", "end-1c")
+    global nombre
+    global txtNombre
+    nombre = txtNombre.get("1.0", "end-1c")
+    global ventana
+    ventana.destroy()
 # ----------INITIAL DATA RECOLLECTION:--------------
 
-print("Sistema: Introduce numero de carnet:")
-carnet = input()
-print("Sistema: Introduce Nombre y Apellido del estudiante:")
-nombre = input()
+global carnet
+global nombre
+#print("Sistema: Introduce numero de carnet:")
+#carnet = input()
+#print("Sistema: Introduce Nombre y Apellido del estudiante:")
+#nombre = input()
 sio = socketio.Client()
 sio.connect('http://127.0.0.1:5000')
 print('Mi identificador es: ', sio.sid)
 
 #INTERFAZ
 
-""" ventana = Tk()
-canva = Canvas(ventana, width=850, height=550)
-ventana.geometry("850x550")
+global ventana
+ventana = tk.Tk()
+canva = tk.Canvas(ventana, width=460, height=300, bg="#003b5a", bd=0, highlightthickness=0, relief='ridge')
+ventana.geometry("460x300")
+ventana['background']='#856ff8'
 canva.place(x=0, y=0)
-Button(ventana, text="Correr Modelo",
-       font=("italic bold", 14), width=20).place(x=300, y=150)
 
-ventana.mainloop() """
+# Navbar
+navbar = canva.create_rectangle(-20, -20, 480, 80, fill="#fdbb2d")
+canva.create_text(220, 50, text="UNIMET Proctor - Estudiante", font=("italic bold", 22))
+
+# Labels and TextBoxs Creation
+lblCarnet = tk.Label(canva, text="Carnet:", font=("italic bold", 14), width = 8, height = 1,
+                     bg="#003b5a", fg="#ffffff", justify= LEFT).place(x=86, y=120)
+
+lblNombre = tk.Label(canva, text="Nombre:", font=("italic bold", 14), width = 8, height = 1,
+                     bg="#003b5a", fg="#ffffff", bd=0, justify= LEFT).place(x=90, y=150)
+
+global txtCarnet
+txtCarnet = tk.Text(canva, font=("italic bold", 14), width = 20, height = 1, highlightthickness=0)
+txtCarnet.place(x=170, y=120)
+
+global txtNombre
+txtNombre = tk.Text(canva, font=("italic bold", 14), width = 20, height = 1, highlightthickness=0)
+txtNombre.place(x=170, y=150)
+
+tk.Button(canva, text="Conectar al servidor", font=("italic bold", 14), width=26, bd=0,
+          bg="#fdbb2d", highlightthickness=0, relief='ridge',
+          command=destroyWindow).place(x=92, y=190)
+
+
+
+ventana.mainloop()
 
 # NECESSARY AND AUXILIARY METHODS:
 
@@ -154,7 +193,7 @@ def identityTheftMethod(faceNames):
         identityTheft.append(True)
     else:
         identityTheft.append(False)
-    print("USURPACION DE INDENTIDAD", identityTheft)
+    #print("USURPACION DE INDENTIDAD", identityTheft)
     counter = 0
     for alert in identityTheft:
         if alert:
@@ -246,11 +285,11 @@ def helpersAlertMethod(numberFaces):
 
     if len(helpersAlert) == 10:
         helpersAlert.pop(0)
-    helpersAlert.append(numberPeople)
-    print("HELPERS TO THE STUDENT", helpersAlert)
+    helpersAlert.append(helpers)
+    #print("HELPERS TO THE STUDENT", helpersAlert)
     counter = 0
     for alert in helpersAlert:
-        if alert-1 == helpers and helpers > 1:
+        if alert == helpers and helpers >= 1:
             counter += 1
     if counter != 10:
         return False
@@ -263,14 +302,14 @@ def gazeAlert(gazeTime, gazeRatio):
     message = ""
     if gazeRatio > 1.99:
         message = "Derecha"
+    elif gazeRatio < 0.4:
+        message = "Izquierda"
     else:
-        if gazeRatio < 0.4:
-            message = "Izquierda"
-        else:
-            message = "Centro"
+        message = "Centro"
 
     if gazeTime >= 1:
         # ACA ESTAMOS RETORNANDO UN ARREGLO QUE MANDA LA DIRECCION DE LA MIRADA Y EL TIEMPO QUE LA PERSONA LLEVA MIRANDO EN LA DIRECCION
+        print("MIRADA ", message, gazeTime)
         return [message, gazeTime]
 
     return False
@@ -316,6 +355,20 @@ def checkAlerts(sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMout
 ###########FALTA EL GAZEEEEEE
 
     fechahora = str(datetime.now())
+
+    miradaAlerta = False
+
+    if (sendGazeAlert != False):
+
+        miradaDireccion = sendGazeAlert[0]
+        tiempoDireccion = sendGazeAlert[1]
+
+        if (miradaDireccion == "Derecha" and tiempoDireccion >= 0.8):
+            miradaAlerta = True
+
+        if (miradaDireccion == "Izquierda" and tiempoDireccion >= 0.8):
+            miradaAlerta = True
+
     text = fechahora + "\n"
     messages = {}
     condition = False
@@ -336,7 +389,7 @@ def checkAlerts(sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMout
 
     if(sendNumberPeopleAlert):
         #text = text + "\nHabitación concurrida por personas"
-        messages['sendNumberPeopleAlert']: False #ARREGLAAAAAAAAAAAAAAAAAAAAR
+        messages['sendNumberPeopleAlert']: True #ARREGLAAAAAAAAAAAAAAAAAAAAR
         #condition = True
     else:
         messages['sendNumberPeopleAlert']: False
@@ -349,11 +402,18 @@ def checkAlerts(sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMout
         messages['sendMouthMovementAlert']: False
 
     if(sendHelpersAlert):
-        text = text + "\nSe detectaron posibles ayudantes"
+        text = text + "\nSe detectaron posibles ayudantes cerca"
         messages['sendHelpersAlert']: True
         condition = True
     else:
         messages['sendHelpersAlert']: False
+
+    if(sendNumberPeopleAlert):
+        text = text + "\nSe detectó una habitación concurrida por personas"
+        messages['sendNumberPeopleAlert']: True
+        condition = True
+    else:
+        messages['sendNumberPeopleAlert']: False
 
     if(sendIdentityTheftAlert):
         text = text + "\nPotencial suplantación de identidad (No se reconoció al estudiante)"
@@ -362,8 +422,16 @@ def checkAlerts(sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMout
     else:
         messages['sendIdentityTheftAlert']: False
 
-    return text, messages, condition, fechahora
+    if(miradaAlerta):
+        condition = True
+        text = text + f"\nEstudiante mirando a la dirección {miradaDireccion} por {str(round(tiempoDireccion, 2))} seg."
+        messages['sendGazeAlert']: True
+    else:
+        messages['sendGazeAlert']: False
 
+    print(text)
+
+    return miradaAlerta, text, messages, condition, fechahora
 
 def buildTextAlert(messages):
 
@@ -424,6 +492,7 @@ def disconnect():
 
 # -------INITIAL SETTINGS --------
 # VIDEO-CAPTURE
+window_name = "Proctor"
 cap = cv2.VideoCapture(0)  # Abrir la camara para recibir video
 # VARIABLES
 img = None
@@ -442,13 +511,16 @@ eyesAndMouth = EyesAndMouth()
 objectDetector = ObjectDetector()
 faceRecognizer = FaceRecognizer(carnet)
 
-
-while True:
+validationCycle = True
+#cv2.startWindowThread()
+cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
+while validationCycle:
     face_locations = []
     face_names = []
     success, img = cap.read()
     if img is not None:  # IF EXISTS FRAME
         imgOriginal = img
+        imgMostrarEstudiante = img
         img = cv2.flip(img, 1)
         height, width = img.shape[:2]
         cv2.rectangle(img, (20, height - 200),
@@ -483,8 +555,10 @@ while True:
         sendGazeAlert = gazeAlert(gazeTime(gazeDirection), gazeRatio)
         sendIdentityTheftAlert = identityTheftMethod(face_names)
 
-        alertText, messages, alertVerification, fechahora = checkAlerts(sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMouthMovementAlert,
+        miradaVerification, alertText, messages, alertVerification, fechahora = checkAlerts(sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMouthMovementAlert,
                                                sendHelpersAlert, sendGazeAlert, sendIdentityTheftAlert, img)
+
+        print("Posterior al check:", miradaVerification)
 
         # sendAlertToSystem(sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMouthMovementAlert,
         #                  sendHelpersAlert, sendGazeAlert, sendIdentityTheftAlert, img)
@@ -516,6 +590,11 @@ while True:
         #        'numberFaces': int(numberFaces), 'phoneDetected': int(phoneDetected),
         #        'laptopDetected': int(laptopDetected)})
 
+        #VALIDATION GAZE AND VALIDATION DIRECTION TIME
+        #alertaGaze = False
+        #if(sendGazeAlert != False):
+        #    alertaGaze = True
+
         sio.emit('dataCliente', {
             'id': str(sio.sid),
             'carnet': carnet,
@@ -532,14 +611,14 @@ while True:
             'gaze': sendGazeAlert
         })
 
-        if(alertVerification and alertText != ""):
+        if(alertVerification):
             print(
                 "-------------------------------------COSAS EXTRAÑAS----------------------------------------")
 
             imgPlus = convert_image_to_jpeg(img)
             capture = convert_image_to_jpeg(screen)
 
-            print(fechahora)
+           # print(fechahora)
             sio.emit('dataAlert', {
                 'carnet': carnet,
                 'alert': alertText,
@@ -551,6 +630,7 @@ while True:
                 'alertMounth': int(sendMouthMovementAlert),
                 'alertHelpers': int(sendHelpersAlert),
                 'alertIdentity': int(sendIdentityTheftAlert),
+                'alertGaze': int(miradaVerification),
                 'time': str(fechahora)
             })
 
@@ -571,11 +651,30 @@ while True:
         gazePlace = not gazePlace
         # SHOWING THE PROCESSED IMAGE
 
-        cv2.imshow("Image", img)
-        key = cv2.waitKey(1)
-        if key & 0xFF == 32:
+        cv2.imshow(window_name, imgMostrarEstudiante)
+        #cv2.destroyWindow(window_name)
+        #key = cv2.waitKey(1) & 0xFF
+        #print(key)
+        #if key == 27:
+        #    print("No estoy claro que carajo esta pasando")
+        #    break
+        key = cv2.waitKey(1) & 0xFF
+        print(key)
+        if key == 27:
+            #print("No estoy claro que carajo esta pasando")
+            #cv2.destroyAllWindows()
+            validationCycle = False
+            cv2.destroyWindow(window_name)
+            cv2.destroyAllWindows()
+            cv2.waitKey(1)
+            cv2.destroyAllWindows()
             break
 
     i = i + 1
 
-# atexit.register(deleteImagesInAlerts)
+print("me sali")
+cap.release()
+print("Post release")
+cv2.destroyAllWindows()
+print("Post CV2")
+sys.exit(1)

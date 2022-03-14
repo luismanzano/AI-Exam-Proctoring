@@ -80,7 +80,7 @@
         </div>
     </div>
 
-    <form class="form" action="/registro" method="POST" enctype="multipart/form-data">
+    <form class="form" action="/registro" method="POST" onsubmit="submitFunction()" enctype="multipart/form-data">
         <div>
             <input type="number" name="carnet" placeholder="Carnet">
             <input type="text" name="nombre" placeholder="Nombre">
@@ -89,6 +89,12 @@
         </div>
         <input class="btn-send" type="submit">
     </form>
+
+    <script>
+        submitFunction = function(){
+            alert("Registro Culminado Exitosamente")
+            }
+    </script>
 
 </body>
 

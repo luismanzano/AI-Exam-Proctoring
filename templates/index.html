@@ -227,6 +227,7 @@
             <!-- <button class="boton-alerta">!</button>
             <button class="boton-bien">✔</button> -->
             <button class="btn-upload" onClick="openUpload()"> ⇧ Cargar</button>
+            <button class="btn-upload" onClick="changeConexion()"> &#x25A1 Detener Supervision</button>
         </div>
 
 
@@ -271,7 +272,7 @@
                 <select id="select-filtros" class="combobox" name="filtro" onChange="seleccionarFiltro()">
                     <option>Todos</option>
                     <option>Identidad</option>
-                    <option>Ayudantes</option>
+                    <option>Ayudantes/Personas</option>
                     <option>Mov. Labios</option>
                     <option>Mov. Mirada</option>
                     <option>Telefono</option>
@@ -305,12 +306,13 @@
 
     <script>
         function openUpload() {
-            window.open("http://localhost:5000/registro", "Registrar usuarios")
+            window.open("http://127.0.0.1:5000/registro", "Registrar usuarios")
         }
     </script>
 
     <script>
 
+        var supervisar = true
         var numeroConectados = 0
         var usuariosData = new Map()
         var usuariosConectados = []
@@ -363,110 +365,118 @@
         })
 
 
-        // -----------------------------------------------------------------------------------------------------
-        // ------------------------------ GET IMAGE AND REAL-TIME ALERTS FROM SERVER ---------------------------
-        socket.on('dataWeb', (msg) => {
+        if(supervisar){
 
-            crearArreglosAlertas(msg.carnet.toString() + "-alertas")
 
-            if (!usuariosData.has(msg.carnet)) {//Si entra un usuario con un id desconocido
+            
 
-                console.log("Sistema: Nuevo usuario " + msg.id)
+            // -----------------------------------------------------------------------------------------------------
+            // ------------------------------ GET IMAGE AND REAL-TIME ALERTS FROM SERVER ---------------------------
+            socket.on('dataWeb', (msg) => {
 
-                //Ajustes en objetos y variables luego de recibir un nuevo usuario
-                numeroConectados = numeroConectados + 1
-                usuariosConectados.push(msg.id)
-                usuariosData.set(msg.carnet.toString(), {
-                    'id': numeroConectados,
-                    'id_cliente': msg.id,
-                    'nombre': msg.nombre,
-                    'ultima_img': msg.img
-                })
+                crearArreglosAlertas(msg.carnet.toString() + "-alertas")
 
-                nombre = msg.nombre
-                carnet = msg.carnet
+                if (!usuariosData.has(msg.carnet)) {//Si entra un usuario con un id desconocido
 
-                //Se actualiza lista de usuarios en el HTML
-                var opcion = document.createElement("option")
-                opcion.setAttribute("id", carnet)//Se envia carnet como id de la etiqueta option
-                opcion.innerHTML = numeroConectados + " - " + nombre
-                selectListaUsuario.appendChild(opcion)
+                    console.log("Sistema: Nuevo usuario " + msg.id)
 
-                if (carnetUsuarioActual == null) {//Primer usuario en entrar a la web. comenzamos a transmitir
+                    //Ajustes en objetos y variables luego de recibir un nuevo usuario
+                    numeroConectados = numeroConectados + 1
+                    usuariosConectados.push(msg.id)
+                    usuariosData.set(msg.carnet.toString(), {
+                        'id': numeroConectados,
+                        'id_cliente': msg.id,
+                        'nombre': msg.nombre,
+                        'ultima_img': msg.img
+                    })
 
-                    //Cambios en la seleccion de usuario
-                    imageContenedor.src = msg.img
-                    carnet = msg.carnet
                     nombre = msg.nombre
-                    textoCarnet.innerText = "Carnet: " + carnet
-                    textoNombre.innerText = "Nombre: " + nombre
+                    carnet = msg.carnet
 
-                    actualizarAlertasRealTime(msg)
+                    //Se actualiza lista de usuarios en el HTML
+                    var opcion = document.createElement("option")
+                    opcion.setAttribute("id", carnet)//Se envia carnet como id de la etiqueta option
+                    opcion.innerHTML = numeroConectados + " - " + nombre
+                    selectListaUsuario.appendChild(opcion)
 
-                    //Actualización usuario Actual
-                    carnetUsuarioActual = carnet
+                    if (carnetUsuarioActual == null) {//Primer usuario en entrar a la web. comenzamos a transmitir
+
+                        //Cambios en la seleccion de usuario
+                        imageContenedor.src = msg.img
+                        carnet = msg.carnet
+                        nombre = msg.nombre
+                        textoCarnet.innerText = "Carnet: " + carnet
+                        textoNombre.innerText = "Nombre: " + nombre
+
+                        actualizarAlertasRealTime(msg)
+
+                        //Actualización usuario Actual
+                        carnetUsuarioActual = carnet
+
+                    }
+
+                } else {//Si se recibe informacion de un id conocido
+
+                    carnetUsuarioActual = selectListaUsuario.options[selectListaUsuario.selectedIndex].id
+
+                    if (msg.carnet == carnetUsuarioActual) {//Actualizar solo si es el usuario seleccionado
+
+                        usuarioActual = usuariosData.get(carnetUsuarioActual.toString())
+                        usuarioActual.ultima_img = msg.img
+                        imageContenedor.src = usuarioActual.ultima_img
+
+                        carnet = msg.carnet
+                        nombre = msg.nombre
+                        textoCarnet.innerText = "Carnet: " + carnet
+                        textoNombre.innerText = "Nombre: " + nombre
+
+                        actualizarAlertasRealTime(msg)
+
+                    } else {//Si se trata de un usuario no seleccionado
+                        //la data igual se actualizara, pero no se mostrará en pantalla
+                        //de inmediato, porque se esta mostrando a otro usuario
+
+                        let usuarioNoEnfocado = usuariosData.get(msg.carnet.toString())
+                        usuarioNoEnfocado.ultima_img = msg.img
+
+                        mostrarNotificacion(msg.nombre, msg.carnet)
+
+                    }
 
                 }
 
-            } else {//Si se recibe informacion de un id conocido
+            })
+            //-----------------------------------------------------------------------------------------
+            //----------------------END GET IMAGE AND REAL-TIME ALERTS FROM SERVER---------------------    
+
+
+            //-------------------------- GET HISTORIC ALERTS WITH FRAME -------------------------------
+
+            socket.on('historicAlert', (msg) => {
 
                 carnetUsuarioActual = selectListaUsuario.options[selectListaUsuario.selectedIndex].id
 
-                if (msg.carnet == carnetUsuarioActual) {//Actualizar solo si es el usuario seleccionado
+                console.log("Alerta Historica:")
+                console.log(msg)
+                //console.log(new Date(msg.time))
 
-                    usuarioActual = usuariosData.get(carnetUsuarioActual.toString())
-                    usuarioActual.ultima_img = msg.img
-                    imageContenedor.src = usuarioActual.ultima_img
+                if (msg.carnet.toString() == carnetUsuarioActual.toString()) {
 
-                    carnet = msg.carnet
-                    nombre = msg.nombre
-                    textoCarnet.innerText = "Carnet: " + carnet
-                    textoNombre.innerText = "Nombre: " + nombre
+                    crearAlertasUsuarioSeleccionado(msg, true)
 
-                    actualizarAlertasRealTime(msg)
+                } else {
 
-                } else {//Si se trata de un usuario no seleccionado
-                    //la data igual se actualizara, pero no se mostrará en pantalla
-                    //de inmediato, porque se esta mostrando a otro usuario
-
-                    let usuarioNoEnfocado = usuariosData.get(msg.carnet.toString())
-                    usuarioNoEnfocado.ultima_img = msg.img
-
-                    mostrarNotificacion(msg.nombre, msg.carnet)
+                    //crearAlertasUsuarioOculto(msg)
+                    crearAlertasUsuarioSeleccionado(msg, false)
 
                 }
 
-            }
-
-        })
-        //-----------------------------------------------------------------------------------------
-        //----------------------END GET IMAGE AND REAL-TIME ALERTS FROM SERVER---------------------    
-
-
-        //-------------------------- GET HISTORIC ALERTS WITH FRAME -------------------------------
-
-        socket.on('historicAlert', (msg) => {
-
-            carnetUsuarioActual = selectListaUsuario.options[selectListaUsuario.selectedIndex].id
-
-            //console.log(msg)
-            //console.log(new Date(msg.time))
-
-            if (msg.carnet.toString() == carnetUsuarioActual.toString()) {
-
-                crearAlertasUsuarioSeleccionado(msg, true)
-
-            } else {
-
-                //crearAlertasUsuarioOculto(msg)
-                crearAlertasUsuarioSeleccionado(msg, false)
-
-            }
-
-        })
-        //----------------------------------------------------------------------------------------
-        //------------------------ END GET HISTORIC ALERTS WITH FRAME ----------------------------        
-
+            })
+            //----------------------------------------------------------------------------------------
+            //------------------------ END GET HISTORIC ALERTS WITH FRAME ----------------------------        
+        
+        
+        }
 
         //----------------------------------------------------------------------------------------
         //----------------------------- AUXILIARY METHODS / FUNCTIONS ----------------------------
@@ -691,15 +701,19 @@
             }
 
             //AGREGAR MIRADA <----------- LUEGO DE PASARLA POR EL BACK
-            //if (alertas.alertNumberPeople == 1) {
-            //    arregloAlertasAyudantes.get(idUser).push(idEtiqueta)
-            //}
+            if (alertas.alertNumberPeople == 1) {//REVISAAAAAAAR
+                arregloAlertasAyudantes.get(idUser).push(idEtiqueta)
+            }
+
+            if(alertas.alertGaze == 1){
+                arregloAlertasMirada.get(idUser).push(idEtiqueta)
+            }
 
             if (alertas.alertMounth == 1) {
                 arregloAlertasLabios.get(idUser).push(idEtiqueta)
             }
 
-            if (alertas.alertHelpers == 1) {
+            if (alertas.alertHelpers == 1 || alertas.alertNumberPeople == 1) {
                 arregloAlertasAyudantes.get(idUser).push(idEtiqueta)
             }
 
@@ -718,7 +732,7 @@
                     if (opcionFiltro.toString() == "Identidad" &&
                         alertas.alertIdentity == 1) visibilidad = "Block"
 
-                    if (opcionFiltro.toString() == "Ayudantes" &&
+                    if (opcionFiltro.toString() == "Ayudantes/Personas" &&
                         alertas.alertHelpers == 1) visibilidad = "Block"
 
                     if (opcionFiltro.toString() == "Mov. Labios" &&
@@ -768,7 +782,7 @@
             }
 
             //Filtrado "Ayudantes"
-            if (opcionFiltro.toString() == "Ayudantes") {
+            if (opcionFiltro.toString() == "Ayudantes/Personas") {
                 arregloAlertasTodo.get(idUser).forEach(idEtiqueta => {
                     if (!arregloAlertasAyudantes.get(idUser).includes(idEtiqueta)) {
                         etiqueta = document.getElementById(idEtiqueta)
@@ -857,6 +871,10 @@
             var notification = new Notification(title, options);
             // Cerramos la notificación.
             setTimeout(notification.close.bind(notification), 5000);
+        }
+
+        function changeConexion(){
+            supervisar = !supervisar
         }
 
     </script>

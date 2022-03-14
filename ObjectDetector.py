@@ -32,7 +32,7 @@ class ObjectDetector():
             numberPeople = (classIds == 1).sum()
 
             #cv2.putText(img, f'No. Personas  {numberPeople}', (40, imgHeight - 70), cv2.FONT_HERSHEY_PLAIN,1.35, (255, 0, 0), 2)
-            print("NUMBER OF PEOPLE", numberPeople)
+            #print("NUMBER OF PEOPLE", numberPeople)
             for classId, confidence, box in zip(classIds.flatten(), confs.flatten(), bbox):
                 # DETECTANDO TELEFONOS
                 if classId == 77:

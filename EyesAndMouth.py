@@ -200,8 +200,8 @@ class EyesAndMouth():
                     rightEyeFrame = img[rightEyeMinY: rightEyeMaxY,
                                         rightEyeMinX: rightEyeMaxX]
                     # rightEyeFrame = cv2.resize(rightEyeFrame, None, fx=5, fy=5)
-                    cv2.imshow("BN_LEFT_THRESHOLD_EYE", thresholdEye)
-                    cv2.imshow("BN_RIGHT_THRESHOLD_EYE", thresholdEyeRight)
+                    # cv2.imshow("BN_LEFT_THRESHOLD_EYE", thresholdEye)
+                    # cv2.imshow("BN_RIGHT_THRESHOLD_EYE", thresholdEyeRight)
                     # cv2.imshow('Mask', leftEyeMasked)
 
                     # print("OPEN MOUTH RATIO", openMouthRatio)

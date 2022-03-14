@@ -62,7 +62,7 @@ def uploader():
             studentWriteJSON.close()            
 
         # Retornamos una respuesta satisfactoria
-        return "<h1>Registro concluido exitosamente</h1>"
+        return render_template("upload.html")
 
     if request.method == 'GET':
         return render_template("upload.html")
