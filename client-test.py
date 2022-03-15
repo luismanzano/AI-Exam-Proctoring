@@ -281,7 +281,7 @@ def mouthMovementAlertMethod(mouthOpen):
     mouthOpenAlert.append(mouthOpen)
     counter = 0
     for alert in mouthOpenAlert:
-        if alert >= 0.3:
+        if alert >= 0.28:
             counter += 1
     if counter < 5:
         return False

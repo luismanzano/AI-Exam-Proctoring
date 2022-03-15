@@ -15,13 +15,20 @@
     body {
         background: rgb(0, 59, 87);
         font-family: "Noto Sans", sans-serif;
-        /* background: linear-gradient(0deg, rgba(0, 59, 87, 1) 0%, rgba(0, 90, 162, 1) 100%); */
+        background: linear-gradient(0deg, rgba(0, 59, 87, 1) 0%, rgba(0, 90, 162, 1) 100%);
         color: #fff;
         margin: 0;
+        height: 55em;
     }
 
     * {
         box-sizing: border-box;
+    }
+
+    input{
+        height: 2.2em;
+        border-radius: 10px;
+        padding: 0.7em;
     }
 
     .navbar {
@@ -41,12 +48,17 @@
         flex-direction: row;
         align-items: center;
     }
-
     h2.title {
-        font-family: "Heebo", sans-serif;
-        font-weight: bold;
-        letter-spacing: 2px;
-    }
+            font-family: "Heebo", sans-serif;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        span.branding {
+            font-family: "Play", sans-serif;
+            letter-spacing: 1px;
+        }
+
 
     .btn-back {
         border: 3px solid #000;
@@ -66,6 +78,14 @@
         color: white;
     }
 
+    .btn-upload {
+            border: 3px solid #000;
+            border-radius: 5px;
+            background-color: transparent;
+            font-size: 1.25rem;
+            margin-left: 20px;
+        }
+
     .form {
         margin: 20px;
     }
@@ -78,6 +98,8 @@
         <div class="controls">
             <!-- <button class="btn-back" onClick="openUpload()"> ⇦ Regresar</button> -->
         </div>
+        
+        <a href="http://127.0.0.1:5000/"><button class="btn-upload">Ir a Supervisión</button></a>
     </div>
 
     <form class="form" action="/registro" method="POST" onsubmit="submitFunction()" enctype="multipart/form-data">

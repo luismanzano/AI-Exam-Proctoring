@@ -18,12 +18,12 @@ class ObjectDetector():
             self.net.setInputSwapRB(True)
 
     def DetectObjects(self, img):
-        classIds, confs, bbox = self.net.detect(img, confThreshold=0.5)
+        classIds, confs, bbox = self.net.detect(img, confThreshold=0.55)
         # print(bbox)
         numberPeople = 0
         phoneDetected = False
         laptopDetected = False
-        img = cv2.resize(img, (0, 0), fx=0.25, fy=0.25)
+        # img = cv2.resize(img, (0, 0), fx=0.25, fy=0.25)
         img.flags.writeable = False
         imgHeight, imgWidth = img.shape[:2]
 
