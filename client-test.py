@@ -535,7 +535,7 @@ def disconnect():
 # -------INITIAL SETTINGS --------
 # VIDEO-CAPTURE
 window_name = "UNIMET Proctor - Estudiante"
-cap = cv2.VideoCapture("video-test.mp4")  # Abrir la camara para recibir video
+cap = cv2.VideoCapture(0)  # Abrir la camara para recibir video
 # VARIABLES
 img = None
 imgOriginal = None
