@@ -227,7 +227,7 @@
             <!-- <button class="boton-alerta">!</button>
             <button class="boton-bien">✔</button> -->
             <button class="btn-upload" onClick="openUpload()"> ⇧ Cargar</button>
-            <button class="btn-upload" onClick="changeConexion()"> &#x25A1 Detener Supervision</button>
+            <button id="obj-btn-supervisar" class="btn-upload" onClick="changeConexion()"> ■ Detener Supervisión</button>
         </div>
 
 
@@ -365,87 +365,87 @@
         })
 
 
-        if(supervisar){
-
-
-            
+        if(supervisar == true){
 
             // -----------------------------------------------------------------------------------------------------
             // ------------------------------ GET IMAGE AND REAL-TIME ALERTS FROM SERVER ---------------------------
             socket.on('dataWeb', (msg) => {
 
-                crearArreglosAlertas(msg.carnet.toString() + "-alertas")
+                if(supervisar){//Supervisar
 
-                if (!usuariosData.has(msg.carnet)) {//Si entra un usuario con un id desconocido
+                    crearArreglosAlertas(msg.carnet.toString() + "-alertas")
 
-                    console.log("Sistema: Nuevo usuario " + msg.id)
+                    if (!usuariosData.has(msg.carnet)) {//Si entra un usuario con un id desconocido
 
-                    //Ajustes en objetos y variables luego de recibir un nuevo usuario
-                    numeroConectados = numeroConectados + 1
-                    usuariosConectados.push(msg.id)
-                    usuariosData.set(msg.carnet.toString(), {
-                        'id': numeroConectados,
-                        'id_cliente': msg.id,
-                        'nombre': msg.nombre,
-                        'ultima_img': msg.img
-                    })
+                        console.log("Sistema: Nuevo usuario " + msg.id)
 
-                    nombre = msg.nombre
-                    carnet = msg.carnet
+                        //Ajustes en objetos y variables luego de recibir un nuevo usuario
+                        numeroConectados = numeroConectados + 1
+                        usuariosConectados.push(msg.id)
+                        usuariosData.set(msg.carnet.toString(), {
+                            'id': numeroConectados,
+                            'id_cliente': msg.id,
+                            'nombre': msg.nombre,
+                            'ultima_img': msg.img
+                        })
 
-                    //Se actualiza lista de usuarios en el HTML
-                    var opcion = document.createElement("option")
-                    opcion.setAttribute("id", carnet)//Se envia carnet como id de la etiqueta option
-                    opcion.innerHTML = numeroConectados + " - " + nombre
-                    selectListaUsuario.appendChild(opcion)
-
-                    if (carnetUsuarioActual == null) {//Primer usuario en entrar a la web. comenzamos a transmitir
-
-                        //Cambios en la seleccion de usuario
-                        imageContenedor.src = msg.img
-                        carnet = msg.carnet
                         nombre = msg.nombre
-                        textoCarnet.innerText = "Carnet: " + carnet
-                        textoNombre.innerText = "Nombre: " + nombre
+                        carnet = msg.carnet
 
-                        actualizarAlertasRealTime(msg)
+                        //Se actualiza lista de usuarios en el HTML
+                        var opcion = document.createElement("option")
+                        opcion.setAttribute("id", carnet)//Se envia carnet como id de la etiqueta option
+                        opcion.innerHTML = numeroConectados + " - " + nombre
+                        selectListaUsuario.appendChild(opcion)
 
-                        //Actualización usuario Actual
-                        carnetUsuarioActual = carnet
+                        if (carnetUsuarioActual == null) {//Primer usuario en entrar a la web. comenzamos a transmitir
+
+                            //Cambios en la seleccion de usuario
+                            imageContenedor.src = msg.img
+                            carnet = msg.carnet
+                            nombre = msg.nombre
+                            textoCarnet.innerText = "Carnet: " + carnet
+                            textoNombre.innerText = "Nombre: " + nombre
+
+                            actualizarAlertasRealTime(msg)
+
+                            //Actualización usuario Actual
+                            carnetUsuarioActual = carnet
+
+                        }
+
+                    } else {//Si se recibe informacion de un id conocido
+
+                        carnetUsuarioActual = selectListaUsuario.options[selectListaUsuario.selectedIndex].id
+
+                        if (msg.carnet == carnetUsuarioActual) {//Actualizar solo si es el usuario seleccionado
+
+                            usuarioActual = usuariosData.get(carnetUsuarioActual.toString())
+                            usuarioActual.ultima_img = msg.img
+                            imageContenedor.src = usuarioActual.ultima_img
+
+                            carnet = msg.carnet
+                            nombre = msg.nombre
+                            textoCarnet.innerText = "Carnet: " + carnet
+                            textoNombre.innerText = "Nombre: " + nombre
+
+                            actualizarAlertasRealTime(msg)
+
+                        } else {//Si se trata de un usuario no seleccionado
+                            //la data igual se actualizara, pero no se mostrará en pantalla
+                            //de inmediato, porque se esta mostrando a otro usuario
+
+                            let usuarioNoEnfocado = usuariosData.get(msg.carnet.toString())
+                            usuarioNoEnfocado.ultima_img = msg.img
+
+                            mostrarNotificacion(msg.nombre, msg.carnet)
+
+                        }
 
                     }
-
-                } else {//Si se recibe informacion de un id conocido
-
-                    carnetUsuarioActual = selectListaUsuario.options[selectListaUsuario.selectedIndex].id
-
-                    if (msg.carnet == carnetUsuarioActual) {//Actualizar solo si es el usuario seleccionado
-
-                        usuarioActual = usuariosData.get(carnetUsuarioActual.toString())
-                        usuarioActual.ultima_img = msg.img
-                        imageContenedor.src = usuarioActual.ultima_img
-
-                        carnet = msg.carnet
-                        nombre = msg.nombre
-                        textoCarnet.innerText = "Carnet: " + carnet
-                        textoNombre.innerText = "Nombre: " + nombre
-
-                        actualizarAlertasRealTime(msg)
-
-                    } else {//Si se trata de un usuario no seleccionado
-                        //la data igual se actualizara, pero no se mostrará en pantalla
-                        //de inmediato, porque se esta mostrando a otro usuario
-
-                        let usuarioNoEnfocado = usuariosData.get(msg.carnet.toString())
-                        usuarioNoEnfocado.ultima_img = msg.img
-
-                        mostrarNotificacion(msg.nombre, msg.carnet)
-
-                    }
-
-                }
-
+                }//Fin Supervisar
             })
+
             //-----------------------------------------------------------------------------------------
             //----------------------END GET IMAGE AND REAL-TIME ALERTS FROM SERVER---------------------    
 
@@ -454,21 +454,24 @@
 
             socket.on('historicAlert', (msg) => {
 
-                carnetUsuarioActual = selectListaUsuario.options[selectListaUsuario.selectedIndex].id
+                if(supervisar){
 
-                console.log("Alerta Historica:")
-                console.log(msg)
-                //console.log(new Date(msg.time))
+                    carnetUsuarioActual = selectListaUsuario.options[selectListaUsuario.selectedIndex].id
 
-                if (msg.carnet.toString() == carnetUsuarioActual.toString()) {
+                    console.log("Alerta Historica:")
+                    console.log(msg)
+                    //console.log(new Date(msg.time))
 
-                    crearAlertasUsuarioSeleccionado(msg, true)
+                    if (msg.carnet.toString() == carnetUsuarioActual.toString()) {
 
-                } else {
+                        crearAlertasUsuarioSeleccionado(msg, true)
 
-                    //crearAlertasUsuarioOculto(msg)
-                    crearAlertasUsuarioSeleccionado(msg, false)
+                    } else {
 
+                        //crearAlertasUsuarioOculto(msg)
+                        crearAlertasUsuarioSeleccionado(msg, false)
+
+                    }
                 }
 
             })
@@ -701,9 +704,9 @@
             }
 
             //AGREGAR MIRADA <----------- LUEGO DE PASARLA POR EL BACK
-            if (alertas.alertNumberPeople == 1) {//REVISAAAAAAAR
-                arregloAlertasAyudantes.get(idUser).push(idEtiqueta)
-            }
+            //if (alertas.alertNumberPeople == 1) {//REVISAAAAAAAR
+            //    arregloAlertasAyudantes.get(idUser).push(idEtiqueta)
+            //}
 
             if(alertas.alertGaze == 1){
                 arregloAlertasMirada.get(idUser).push(idEtiqueta)
@@ -713,7 +716,9 @@
                 arregloAlertasLabios.get(idUser).push(idEtiqueta)
             }
 
-            if (alertas.alertHelpers == 1 || alertas.alertNumberPeople == 1) {
+            if (alertas.alertHelpers == 1 || 
+            alertas.alertNumberPeople == 1 ||
+            alertas.alertUserInScene == 1) {
                 arregloAlertasAyudantes.get(idUser).push(idEtiqueta)
             }
 
@@ -733,13 +738,15 @@
                         alertas.alertIdentity == 1) visibilidad = "Block"
 
                     if (opcionFiltro.toString() == "Ayudantes/Personas" &&
-                        alertas.alertHelpers == 1) visibilidad = "Block"
+                        alertas.alertHelpers == 1 ||
+                        alertas.alertNumberPeople == 1 ||
+                        alertas.alertUserInScene == 1) visibilidad = "Block"
 
                     if (opcionFiltro.toString() == "Mov. Labios" &&
                         alertas.alertMounth == 1) visibilidad = "Block"
 
-                    /*if (opcionFiltro.toString() == "Mov. Mirada" &&
-                    alertas.alertIdentity == 1) visibilidad = "Block" */
+                    if (opcionFiltro.toString() == "Mov. Mirada" &&
+                        alertas.alertGaze == 1) visibilidad = "Block"
 
                     if (opcionFiltro.toString() == "Telefono" &&
                         alertas.alertPhone == 1) visibilidad = "Block"
@@ -875,6 +882,14 @@
 
         function changeConexion(){
             supervisar = !supervisar
+            let btnSupervisar = document.getElementById("obj-btn-supervisar")
+            if(supervisar){
+                btnSupervisar.innerText = " ■ Detener Supervisión"
+                alert("Se ha activado la recepción de imágenes de los estudiantes.")
+            }else{
+                btnSupervisar.innerText = " ▷ Activar Supervisión"
+                alert("Se ha desactivado el modo supervisor (recepción de imágenes desactivada).")
+            }
         }
 
     </script>

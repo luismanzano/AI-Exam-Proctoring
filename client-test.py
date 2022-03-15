@@ -3,7 +3,9 @@ from datetime import datetime
 import pyautogui
 import numpy
 import tkinter as tk
+from tkinter import messagebox
 from tkinter import *
+import os
 
 import socketio
 import cv2
@@ -30,8 +32,13 @@ def destroyWindow():
     global nombre
     global txtNombre
     nombre = txtNombre.get("1.0", "end-1c")
-    global ventana
-    ventana.destroy()
+    existe = os.path.exists(f'Faces/{carnet}.jpg')
+    if (existe):
+        global ventana
+        ventana.destroy()
+    else:
+        messagebox.showinfo("UNIMET Proctor - Alerta", "El carnet indicado no existe en los datos guardados del sistema, ponte en contacto con tu profesor o verifica el carnet introducido.")
+
 # ----------INITIAL DATA RECOLLECTION:--------------
 
 global carnet
@@ -40,14 +47,12 @@ global nombre
 #carnet = input()
 #print("Sistema: Introduce Nombre y Apellido del estudiante:")
 #nombre = input()
-sio = socketio.Client()
-sio.connect('http://127.0.0.1:5000')
-print('Mi identificador es: ', sio.sid)
 
 #INTERFAZ
 
 global ventana
 ventana = tk.Tk()
+ventana.title("UNIMET Proctor - Estudiante")
 canva = tk.Canvas(ventana, width=460, height=300, bg="#003b5a", bd=0, highlightthickness=0, relief='ridge')
 ventana.geometry("460x300")
 ventana['background']='#856ff8'
@@ -79,6 +84,14 @@ tk.Button(canva, text="Conectar al servidor", font=("italic bold", 14), width=26
 
 
 ventana.mainloop()
+
+#ALERTA FINAL
+messagebox.showinfo("UNIMET Proctor - Alerta", "A partir de ahora comenzarás a compartir tu pantalla con el docente. Para dejar de compartir pulsa la tecla ESC.")
+
+#CONECCTION WITH DE SERVER
+sio = socketio.Client()
+sio.connect('http://127.0.0.1:5000')
+print('Mi identificador es: ', sio.sid)
 
 # NECESSARY AND AUXILIARY METHODS:
 
@@ -314,6 +327,23 @@ def gazeAlert(gazeTime, gazeRatio):
 
     return False
 
+def userInSceneAlert(numberFaces):
+    global checkNumberFaces
+    global counterCheckNumberFaces
+    if(numberFaces == 0):
+        counterCheckNumberFaces = counterCheckNumberFaces + 1
+
+        if(counterCheckNumberFaces >= 10):
+            checkNumberFaces = True
+            return True
+
+    else:
+        counterCheckNumberFaces = 0
+        checkNumberFaces = False
+        return False
+    
+    return False
+
 # END OF ALERTS FOR THE TEACHER
 
 
@@ -351,10 +381,13 @@ def sendAlertToSystem(phoneAlert, laptopAlert, numberPeopleAlert,
 # -- END SENDING ALERTS TO THE SYSTEM
 
 
-def checkAlerts(sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMouthMovementAlert, sendHelpersAlert, sendGazeAlert, sendIdentityTheftAlert, img):
+def checkAlerts(numberPeople, sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMouthMovementAlert, sendHelpersAlert, sendGazeAlert, sendIdentityTheftAlert, img):
 ###########FALTA EL GAZEEEEEE
 
     fechahora = str(datetime.now())
+
+    global checkNumberFaces
+    global counterCheckNumberFaces
 
     miradaAlerta = False
 
@@ -387,12 +420,12 @@ def checkAlerts(sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMout
     else:
         messages['sendLaptopAlert']: False
 
-    if(sendNumberPeopleAlert):
+    #if(sendNumberPeopleAlert):
         #text = text + "\nHabitación concurrida por personas"
-        messages['sendNumberPeopleAlert']: True #ARREGLAAAAAAAAAAAAAAAAAAAAR
+    #    messages['sendNumberPeopleAlert']: True #ARREGLAAAAAAAAAAAAAAAAAAAAR
         #condition = True
-    else:
-        messages['sendNumberPeopleAlert']: False
+    #else:
+    #    messages['sendNumberPeopleAlert']: False
 
     if(sendMouthMovementAlert):
         text = text + "\nLabios en movimiento"
@@ -408,12 +441,21 @@ def checkAlerts(sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMout
     else:
         messages['sendHelpersAlert']: False
 
-    if(sendNumberPeopleAlert):
+    if(sendNumberPeopleAlert and numberPeople>=1):
         text = text + "\nSe detectó una habitación concurrida por personas"
         messages['sendNumberPeopleAlert']: True
         condition = True
     else:
         messages['sendNumberPeopleAlert']: False
+
+    if(checkNumberFaces):
+        text = text + "\nNo se detectó al estudiante en la habitación o cerca del computador"
+        messages['checkNumberFaces']: True
+        condition = True
+        checkNumberFaces = False
+        counterCheckNumberFaces = 0
+    else:
+        messages['checkNumberFaces']: False
 
     if(sendIdentityTheftAlert):
         text = text + "\nPotencial suplantación de identidad (No se reconoció al estudiante)"
@@ -492,8 +534,8 @@ def disconnect():
 
 # -------INITIAL SETTINGS --------
 # VIDEO-CAPTURE
-window_name = "Proctor"
-cap = cv2.VideoCapture(0)  # Abrir la camara para recibir video
+window_name = "UNIMET Proctor - Estudiante"
+cap = cv2.VideoCapture("video-test.mp4")  # Abrir la camara para recibir video
 # VARIABLES
 img = None
 imgOriginal = None
@@ -501,6 +543,10 @@ i = 0.0
 pTime = 0
 numberFaces = 0
 phoneDetected = True
+global checkNumberFaces
+checkNumberFaces = False
+global counterCheckNumberFaces
+counterCheckNumberFaces = 0
 
 initTime = time.time()
 gazeDirection = [0, 0]
@@ -555,7 +601,10 @@ while validationCycle:
         sendGazeAlert = gazeAlert(gazeTime(gazeDirection), gazeRatio)
         sendIdentityTheftAlert = identityTheftMethod(face_names)
 
-        miradaVerification, alertText, messages, alertVerification, fechahora = checkAlerts(sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMouthMovementAlert,
+        #Revisar si hay personas en la escena
+        userInSceneReport = userInSceneAlert(numberFaces)
+
+        miradaVerification, alertText, messages, alertVerification, fechahora = checkAlerts(numberPeople, sendPhoneAlert, sendLaptopAlert, sendNumberPeopleAlert, sendMouthMovementAlert,
                                                sendHelpersAlert, sendGazeAlert, sendIdentityTheftAlert, img)
 
         print("Posterior al check:", miradaVerification)
@@ -629,6 +678,7 @@ while validationCycle:
                 'alertNumberPeople': int(sendNumberPeopleAlert),
                 'alertMounth': int(sendMouthMovementAlert),
                 'alertHelpers': int(sendHelpersAlert),
+                'alertUserInScene': int(userInSceneReport),
                 'alertIdentity': int(sendIdentityTheftAlert),
                 'alertGaze': int(miradaVerification),
                 'time': str(fechahora)
@@ -651,7 +701,7 @@ while validationCycle:
         gazePlace = not gazePlace
         # SHOWING THE PROCESSED IMAGE
 
-        cv2.imshow(window_name, imgMostrarEstudiante)
+        cv2.imshow(window_name, img)
         #cv2.destroyWindow(window_name)
         #key = cv2.waitKey(1) & 0xFF
         #print(key)
