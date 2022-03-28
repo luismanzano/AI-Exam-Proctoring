@@ -229,7 +229,7 @@ def phoneAlertMethod(phoneDetected):
     for alert in phoneAlert:
         if alert:
             counter += 1
-    if counter != 10:
+    if counter <= 2:
         return False
     return True
 
