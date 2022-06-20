@@ -1,0 +1,8 @@
+future==0.18.2
+opencv-python==4.5.4.60
+mediapipe==0.8.9
+Pillow==9.0.1
+Flask==1.1.2
+Werkzeug==2.0.2
+PyAutoGUI==0.9.53
+numpy==1.22.2
